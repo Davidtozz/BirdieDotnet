@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -24,5 +25,17 @@ namespace BirdieDotnet
         {
             InitializeComponent();
         }
+
+        private void GoToGoogle(object sender, RequestNavigateEventArgs e)
+        {
+            string url = e.Uri.AbsoluteUri;
+            Process.Start(new ProcessStartInfo(url)
+            {
+                UseShellExecute = true
+
+            }); 
+            
+        }
+
     }
 }

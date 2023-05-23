@@ -5,8 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BirdieDotnet"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="233" Width="456">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="29*"/>
+            <ColumnDefinition Width="21*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock>Hello <Bold>World!</Bold> and Hello <Italic>you!</Italic>
+        <LineBreak/>
+        Go to <Hyperlink 
+            x:Name="urlRedirect" 
+            NavigateUri="https://www.google.com"
+            RequestNavigate="GoToGoogle">google.com</Hyperlink>
+        </TextBlock>
 
     </Grid>
 </Window>
