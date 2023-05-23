@@ -5,19 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BirdieDotnet"
         mc:Ignorable="d"
-        Title="MainWindow" Height="233" Width="456">
+        Title="Birdie" Height="233" Width="456">
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="29*"/>
-            <ColumnDefinition Width="21*"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock>Hello <Bold>World!</Bold> and Hello <Italic>you!</Italic>
-        <LineBreak/>
-        Go to <Hyperlink 
-            x:Name="urlRedirect" 
-            NavigateUri="https://www.google.com"
-            RequestNavigate="GoToGoogle">google.com</Hyperlink>
-        </TextBlock>
+
+        <DockPanel VerticalAlignment="Top" Height="28">
+            <ToolBarTray VerticalAlignment="Top" DockPanel.Dock="Top">
+                <ToolBar ToolBarTray.IsLocked="True" Loaded="ToolBar_Loaded">
+
+                    <Menu ToolBar.OverflowMode="Never" Background="#FFEEF5FD">
+                        <MenuItem Header="File" Background="#FFEEF5FD" VerticalContentAlignment="Stretch" FontSize="13"/>
+                        <MenuItem Header="New" Background="#FFEEF5FD" VerticalContentAlignment="Stretch" FontSize="13"/>
+                    </Menu>
+                </ToolBar>
+
+            </ToolBarTray>
+        </DockPanel>
+
 
     </Grid>
 </Window>
