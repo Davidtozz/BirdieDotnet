@@ -8,6 +8,11 @@
         Title="Birdie" Height="233" Width="456">
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
         <DockPanel VerticalAlignment="Top" Height="28">
             <ToolBarTray VerticalAlignment="Top" DockPanel.Dock="Top">
