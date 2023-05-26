@@ -11,12 +11,12 @@ namespace BirdieDotnetAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ChatController : Controller
+    public sealed class ConversationController : Controller
     {
         
         public readonly MySqlConnection _connection;
 
-        public ChatController(MySqlConnection connection)
+        public ConversationController(MySqlConnection connection)
         {
             _connection = connection;
 
@@ -47,16 +47,14 @@ namespace BirdieDotnetAPI.Controllers
 
             if (reader.Read())
             {
-                string ParticipantsIds = reader.GetString("participant_ids");
-
                 var conversation = new Conversation
                 {
                     Id = reader.GetInt32("conversation_id"),
                     Name = reader.GetString("conversation_name"),
                     CreatedAt = reader.GetDateTime("created_at"),
-                    ParticipantsIds = ParticipantsIds.Split(',')
-                                                     .Select(int.Parse)
-                                                     .ToList()
+                    ParticipantsIds = reader.GetString("participant_ids").Split(',')
+                                                                         .Select(int.Parse)
+                                                                         .ToList()
                     
                 };
 

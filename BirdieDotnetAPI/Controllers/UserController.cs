@@ -9,7 +9,7 @@ namespace BirdieDotnetAPI.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public sealed class UserController : ControllerBase
     {
 
         private readonly MySqlConnection _connection;
