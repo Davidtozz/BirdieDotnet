@@ -2,6 +2,7 @@
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using BirdieDotnetAPI.Models;
+using System.Xml.Linq;
 
 namespace BirdieDotnetAPI.Controllers
 {
@@ -19,98 +20,149 @@ namespace BirdieDotnetAPI.Controllers
             
         }
 
-        [HttpGet] //! api/user/  
+        [HttpGet] //! /api/user
         public IActionResult GetAllUsers()
         {
-
-            Console.WriteLine("Received GET at /api/user");
-            var users = new List<object>();
-            using (var command = _connection.CreateCommand())
+            List<User> UserList = new();
+            using MySqlConnection connection = _connection;
+            using MySqlCommand command = connection.CreateCommand();
+            try 
             {
-                command.CommandText = "SELECT * FROM user";
-                _connection.Open();
-
-                // Execute the query and retrieve the results
-                using (var reader = command.ExecuteReader())
-                {
-                    // Process the query results as needed
-                    while (reader.Read())
-                    {
-                        // Access the values from the query results
-                        var user = new
-                        {
-                            Id = reader.GetInt32("id"),
-                            Name = reader.GetString("name"),
-                            Psw = reader.GetString("password")
-                        };
-
-                        users.Add(user);
-                    }
-                }
-
-                _connection.Close();
+                connection.Open();
             }
+            catch (MySqlException) 
+            {
+                return StatusCode(500, "Internal server error");
+            }
+            
+            command.CommandText = "SELECT * FROM user";
+            using MySqlDataReader reader = command.ExecuteReader();
 
-            var json = JsonConvert.SerializeObject(users);
+            // Loop through query results
+            while (reader.Read())
+            {
+                var user = new User{
+                    Id = reader.GetInt32("id"),
+                    Name = reader.GetString("name"),
+                    Psw = reader.GetString("password")
+                };
+                UserList.Add(user);
+            }
+            
+            connection.Close();
+            var SerializedUserList = JsonConvert.SerializeObject(UserList);
 
-
-            return Ok(json);
+            return Ok(SerializedUserList);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetUserById(int id)
         {
-            Console.WriteLine($"Received GET at /api/user/{id}");
-
             User? user = null;
+            using MySqlConnection connection = _connection;
+            using MySqlCommand command = connection.CreateCommand();
 
-            using (var command = _connection.CreateCommand())
+            try
             {
-                command.CommandText = "SELECT * FROM user WHERE id = @id";
-                command.Parameters.AddWithValue("@id", id);
-                
-                _connection.Open();
-
-                // Execute the query and retrieve the results
-                using (var reader = command.ExecuteReader())
-                {
-                    // Process the query results as needed
-                    if (reader.Read())
-                    { 
-                        user = new User{
-                        Id = reader.GetInt32("id"),
-                        Name = reader.GetString("name"),
-                        Psw = reader.GetString("password")
-                        };
-                    }
-                }
-
-                _connection.Close();
+                connection.Open();
+            }
+            catch (MySqlException)
+            {
+                return StatusCode(500, "Internal server error");
             }
 
-            var json = (user != null) ? JsonConvert.SerializeObject(user) : "";
+            #region SearchUserById
+            command.CommandText = "SELECT * FROM user WHERE id = @id";
+            command.Parameters.AddWithValue("@id", id);
 
-            return Ok(json);
+            // Execute the query and retrieve the results
+            using MySqlDataReader results = command.ExecuteReader();
+            
+            // Check if user exists
+            if (results.Read())
+            {
+                user = new User
+                {
+                    Id = results.GetInt32("id"),
+                    Name = results.GetString("name"),
+                    Psw = results.GetString("password")
+                };
+                connection.Close();
+            }
+            #endregion
+
+            var JsonResult = (user != null) ? JsonConvert.SerializeObject(user) : "";
+            return Ok(JsonResult);
         }
 
-
-
-        [HttpPost("new")]
-        public IActionResult CreateNewUser()
+        [HttpPost("new")]//! /api/user/new
+        public IActionResult CreateNewUser([FromBody] User user)
         {
-        
-            string RequestBody = HttpContext.Request.Body.ToString();
+            //! debug
+            //Console.WriteLine($"user:\n{user.Name}\n{user.Psw}");      
+            using MySqlConnection Connection = _connection;
+            
+            try
+            {
+                Connection.Open();
+            }
+            catch (MySqlException)
+            {
+                return StatusCode(500, "Internal server error");
+            }
 
-            Console.WriteLine(RequestBody);
+            #region CheckIfUserExists
 
-            return Ok();
+            using MySqlCommand Command = Connection.CreateCommand();
+            Command.CommandText = "SELECT * FROM user WHERE name = @name;";
+            Command.Parameters.AddWithValue("@name", user.Name);
+            Command.Parameters.AddWithValue("@psw", user.Psw);
+
+            if (Command.ExecuteScalar() != null) return Ok("User already exists");
+
+            #endregion
+
+            #region CreateNewUser
+            
+            Command.CommandText = "INSERT INTO user (user.name, user.password) VALUES (@name, @psw);";
+            int RowsAffected = Command.ExecuteNonQuery();
+            Connection.Close();
+
+            return (RowsAffected > 0) ? Ok("User added successfully") : StatusCode(500, "Error while adding user");           
+            #endregion
         }
 
         [HttpPost("login")]
-        public IActionResult LoginUser() 
-        { // implement later 
-            return Ok(); 
-        }
+        public IActionResult LoginUser([FromBody] User user) 
+        {
+            using MySqlConnection Connection = _connection;
+            
+            try
+            {
+                Connection.Open();
+            }
+            catch (MySqlException)
+            {
+                return StatusCode(500, "Internal server error");
+            }
 
+            using MySqlCommand Command = Connection.CreateCommand();
+
+            
+            Command.CommandText = "SELECT user.name, user.password FROM user WHERE user.name = @name AND user.password = @psw;";
+            Command.Parameters.AddWithValue("@name", user.Name);
+            Command.Parameters.AddWithValue("@psw", user.Psw);
+            if (Command.ExecuteScalar() != null)
+            {
+                Connection.Close();
+                return Ok($"User {user.Name} logged in");
+            }
+            else
+            {
+                Connection.Close();
+                return StatusCode(StatusCodes.Status401Unauthorized, "Invalid credentials");
+            }
+    
+        }
     }
 }
