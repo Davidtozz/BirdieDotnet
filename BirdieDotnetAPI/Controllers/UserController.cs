@@ -55,7 +55,7 @@ namespace BirdieDotnetAPI.Controllers
             return Ok(SerializedUserList);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] //! /api/user/{id}
         public IActionResult GetUserById(int id)
         {
             User? user = null;
@@ -95,7 +95,7 @@ namespace BirdieDotnetAPI.Controllers
             return Ok(JsonResult);
         }
 
-        [HttpPost("new")]//! /api/user/new
+        [HttpPost("new")] //! /api/user/new
         public IActionResult CreateNewUser([FromBody] User user)
         {
             //! debug
@@ -132,7 +132,7 @@ namespace BirdieDotnetAPI.Controllers
             #endregion
         }
 
-        [HttpPost("login")]
+        [HttpPost("login")] //! /api/user/login
         public IActionResult LoginUser([FromBody] User user) 
         {
             using MySqlConnection Connection = _connection;
@@ -148,7 +148,6 @@ namespace BirdieDotnetAPI.Controllers
 
             using MySqlCommand Command = Connection.CreateCommand();
 
-            
             Command.CommandText = "SELECT user.name, user.password FROM user WHERE user.name = @name AND user.password = @psw;";
             Command.Parameters.AddWithValue("@name", user.Name);
             Command.Parameters.AddWithValue("@psw", user.Psw);
@@ -162,7 +161,6 @@ namespace BirdieDotnetAPI.Controllers
                 Connection.Close();
                 return StatusCode(StatusCodes.Status401Unauthorized, "Invalid credentials");
             }
-    
         }
     }
 }
