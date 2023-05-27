@@ -35,7 +35,7 @@ namespace BirdieDotnetAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
             
-            command.CommandText = "SELECT * FROM user";
+            command.CommandText = "SELECT * FROM users";
             using MySqlDataReader reader = command.ExecuteReader();
 
             // Loop through query results
@@ -96,7 +96,7 @@ namespace BirdieDotnetAPI.Controllers
         }
 
         [HttpPost("new")] //! /api/user/new
-        public IActionResult CreateNewUser([FromBody] User user)
+        public IActionResult RegisterUser([FromBody] User user)
         {
             //! debug
             //Console.WriteLine($"user:\n{user.Name}\n{user.Psw}");      
@@ -114,7 +114,7 @@ namespace BirdieDotnetAPI.Controllers
             #region CheckIfUserExists
 
             using MySqlCommand Command = Connection.CreateCommand();
-            Command.CommandText = "SELECT * FROM user WHERE name = @name;";
+            Command.CommandText = "SELECT * FROM users WHERE users.username = @name;";
             Command.Parameters.AddWithValue("@name", user.Name);
             Command.Parameters.AddWithValue("@psw", user.Psw);
 
@@ -124,7 +124,7 @@ namespace BirdieDotnetAPI.Controllers
 
             #region CreateNewUser
             
-            Command.CommandText = "INSERT INTO user (user.name, user.password) VALUES (@name, @psw);";
+            Command.CommandText = "INSERT INTO users (users.username, users.password) VALUES (@name, @psw);";
             int RowsAffected = Command.ExecuteNonQuery();
             Connection.Close();
 

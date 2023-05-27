@@ -8,52 +8,31 @@ using BirdieDotnetCLI.Models;
 
 namespace BirdieDotnetCLI.Services
 {
-    public class UserService
+    public static class UserService
     {
+        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly string apiUrl = "http://localhost:5069/api/user";
 
-        private readonly HttpClient _httpClient;
-        private readonly string _apiUrl;
-
-        public UserService(string apiUrl)
-        {
-            _httpClient = new HttpClient();
-            _apiUrl = apiUrl;
-        }
-
-        public async Task<bool> LoginUser(User user)
+        public static async Task<bool> LoginUser(User user)
         {
             string SerializedUser = JsonConvert.SerializeObject(user);
-
-            var RequestContent = new StringContent(SerializedUserCredentials, Encoding.UTF8, "application/json");
-            var Response = await _httpClient.PostAsync("http://localhost:5069/api/user/login", RequestContent);
-
-            //! DEBUG
-            //string ResponseBody = await Response.Content.ReadAsStringAsync();
-
-            //Console.WriteLine(ResponseBody);
-            #region StatusCode
-
-            if (Response.IsSuccessStatusCode)
-            {
-                Console.WriteLine($"Welcome back, {username}!");
-                return true;
-            }
-            else
-            {
-                string body = string.Empty;
-
-                return false;
-
-                //Console.WriteLine(b);
-                //Console.WriteLine($"Username or password invalid. Status code: {Response.StatusCode}");
-            }
-            #endregion
-
+            return await SendUserRequest(endpoint: $"{apiUrl}/login", SerializedUser); 
+            
         }
 
-        private Task RegisterUser(User user)
+        public static async Task<bool> RegisterUser(User user)
         {
-            throw new NotImplementedException();
+            string SerializedUser = JsonConvert.SerializeObject(user); 
+            return await SendUserRequest($"{apiUrl}/new", SerializedUser);
+        }
+
+        // Multi-purpose method 
+        private static async Task<bool> SendUserRequest(string endpoint, string serializedUser)
+        {
+            var requestContent = new StringContent(serializedUser, Encoding.UTF8, "application/json");
+            var Response = await _httpClient.PostAsync(endpoint, requestContent);
+
+            return Response.IsSuccessStatusCode;
         }
 
     }

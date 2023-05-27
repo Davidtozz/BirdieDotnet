@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BirdieDotnetCLI
+namespace BirdieDotnetCLI.Services
 {
-    public sealed class SignalRConnectionHandler
+    public sealed class SignalRService
     {
         [Required]
         private HubConnection Connection;
 
-        public SignalRConnectionHandler(string HubUrl) 
+        public SignalRService(string HubUrl)
         {
             Connection = new HubConnectionBuilder()
             .WithUrl(HubUrl)
@@ -42,13 +42,13 @@ namespace BirdieDotnetCLI
 
         public async Task SendUserInput() // TEST METHOD
         {
-            string input; 
-            do 
+            string input;
+            do
             {
                 input = Console.ReadLine() ?? "_";
                 await Connection.InvokeAsync("SendMessage", input);
-            } 
-            while(input != "exit");
+            }
+            while (input != "exit");
 
             // Interrupt SignalR if input == "exit"
             await Connection.StopAsync();
