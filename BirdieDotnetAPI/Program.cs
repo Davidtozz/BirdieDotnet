@@ -2,7 +2,10 @@ using BirdieDotnetAPI.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Configuration;
 using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+
+
 builder.Services.AddSingleton(new MySqlConnection(connectionString));
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 builder.Services.AddSignalR();
 
@@ -44,9 +51,9 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-app.UseAuthorization();
-
 app.UseRouting();
+
+app.UseAuthorization();
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();

@@ -2,7 +2,14 @@
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using BirdieDotnetAPI.Models;
+using System.IdentityModel.Tokens;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Runtime.InteropServices;
 
 namespace BirdieDotnetAPI.Controllers
 {
@@ -13,11 +20,12 @@ namespace BirdieDotnetAPI.Controllers
     {
 
         private readonly MySqlConnection _connection;
+        private readonly IConfiguration _configuration;
 
-        public UserController(MySqlConnection connection) 
+        public UserController(MySqlConnection connection, IConfiguration configuration) 
         {
             _connection = connection;
-            
+            _configuration = configuration;
         }
 
         [HttpGet] //! /api/user
@@ -95,8 +103,12 @@ namespace BirdieDotnetAPI.Controllers
             return Ok(JsonResult);
         }
 
+
+        //TODO fix Authorize attributes errors
+
+        //[Authorize]
         [HttpPost("new")] //! /api/user/new
-        public IActionResult RegisterUser([FromBody] User user)
+        public IActionResult RegisterUser([FromBody] User user, IConfiguration configuration)
         {
             //! debug
             //Console.WriteLine($"user:\n{user.Name}\n{user.Psw}");      
@@ -132,9 +144,13 @@ namespace BirdieDotnetAPI.Controllers
             #endregion
         }
 
+        
+        // [Authorize] 
         [HttpPost("login")] //! /api/user/login
         public IActionResult LoginUser([FromBody] User user) 
         {
+            #region CredentialValidation
+
             using MySqlConnection Connection = _connection;
             
             try
@@ -151,16 +167,54 @@ namespace BirdieDotnetAPI.Controllers
             Command.CommandText = "SELECT users.username, users.password FROM users WHERE users.username = @name AND users.password = @psw;";
             Command.Parameters.AddWithValue("@name", user.Name);
             Command.Parameters.AddWithValue("@psw", user.Psw);
+
+            #endregion
+
             if (Command.ExecuteScalar() != null)
             {
+                //! DEBUG
+                //Console.WriteLine("Closing connection...");
                 Connection.Close();
-                return Ok($"User {user.Name} logged in");
+
+                return Ok(GenerateJwtToken(user));
+
             }
             else
             {
                 Connection.Close();
                 return StatusCode(StatusCodes.Status401Unauthorized, "Invalid credentials");
             }
+        }
+
+        private object GenerateJwtToken(User user)
+        {
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var configuration = _configuration;
+
+            // Key from appsettings.json
+            byte[] key = new byte[32];
+            key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
+
+            // Create the token descriptor
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                        new Claim(ClaimTypes.Name, user.Name)
+                    }),
+                Expires = DateTime.UtcNow.AddDays(1), // expiration date
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+            };
+
+            // Generate the token
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            // Write the token as a string
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return new { Token = tokenString };
         }
     }
 }
