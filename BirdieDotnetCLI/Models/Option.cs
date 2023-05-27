@@ -11,5 +11,9 @@ namespace BirdieDotnetCLI.Models
         public string Text { get; set; }
         public bool IsChecked { get; set; }
         public Action Callback { get; set; }
+
+        public Option() {
+            throw new NotImplementedException();
+        }
     }
 }

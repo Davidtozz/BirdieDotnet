@@ -11,6 +11,8 @@ namespace BirdieDotnetCLI.Models
         public string Name { get; set; }
         public string Psw { get; set; }
         //public string Email { get; set; }
+        public string AuthorizationToken { get; set; }
+        
 
         public User(string name, string psw)
         {

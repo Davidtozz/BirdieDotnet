@@ -28,6 +28,7 @@ namespace BirdieDotnetAPI.Controllers
             _configuration = configuration;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet] //! /api/user
         public IActionResult GetAllUsers()
         {
@@ -63,6 +64,7 @@ namespace BirdieDotnetAPI.Controllers
             return Ok(SerializedUserList);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")] //! /api/user/{id}
         public IActionResult GetUserById(int id)
         {
@@ -106,7 +108,7 @@ namespace BirdieDotnetAPI.Controllers
 
         //TODO fix Authorize attributes errors
 
-        //[Authorize]
+        [AllowAnonymous]
         [HttpPost("new")] //! /api/user/new
         public IActionResult RegisterUser([FromBody] User user, IConfiguration configuration)
         {
@@ -140,12 +142,12 @@ namespace BirdieDotnetAPI.Controllers
             int RowsAffected = Command.ExecuteNonQuery();
             Connection.Close();
 
-            return (RowsAffected > 0) ? Ok("User added successfully") : StatusCode(500, "Error while adding user");           
+            return (RowsAffected > 0) ? Ok(GenerateJwtToken(ref user)) : StatusCode(500, "Error while adding user");           
             #endregion
         }
 
         
-        // [Authorize] 
+        [AllowAnonymous] 
         [HttpPost("login")] //! /api/user/login
         public IActionResult LoginUser([FromBody] User user) 
         {
@@ -176,7 +178,7 @@ namespace BirdieDotnetAPI.Controllers
                 //Console.WriteLine("Closing connection...");
                 Connection.Close();
 
-                return Ok(GenerateJwtToken(user));
+                return Ok(GenerateJwtToken(ref user));
 
             }
             else
@@ -186,7 +188,7 @@ namespace BirdieDotnetAPI.Controllers
             }
         }
 
-        private object GenerateJwtToken(User user)
+        private object GenerateJwtToken(ref User user)
         {
 
             var tokenHandler = new JwtSecurityTokenHandler();

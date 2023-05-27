@@ -15,24 +15,44 @@ namespace BirdieDotnetCLI.Services
 
         public static async Task<bool> LoginUser(User user)
         {
-            string SerializedUser = JsonConvert.SerializeObject(user);
-            return await SendUserRequest(endpoint: $"{apiUrl}/login", SerializedUser); 
+            string serializedUser = JsonConvert.SerializeObject(user);
+            var response = await SendUserRequest($"{apiUrl}/login", serializedUser).Result;
             
+            user.AuthorizationToken = response["token"];
+            
+            return true;
         }
 
         public static async Task<bool> RegisterUser(User user)
         {
-            string SerializedUser = JsonConvert.SerializeObject(user); 
-            return await SendUserRequest($"{apiUrl}/new", SerializedUser);
+            string serializedUser = JsonConvert.SerializeObject(user);
+            var response = await SendUserRequest($"{apiUrl}/new", serializedUser).Result;
+
+            user.AuthorizationToken = response["token"];
+
+            return true;
         }
 
         // Multi-purpose method 
-        private static async Task<bool> SendUserRequest(string endpoint, string serializedUser)
+        private static async Task<dynamic> SendUserRequest(string endpoint, string serializedUser)
         {
             var requestContent = new StringContent(serializedUser, Encoding.UTF8, "application/json");
             var Response = await _httpClient.PostAsync(endpoint, requestContent);
 
-            return Response.IsSuccessStatusCode;
+            if (Response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Login successful!");
+                var ResponseBody = await Response.Content.ReadAsStringAsync();
+                var DeserializedResponseBody = JsonConvert.DeserializeObject<Dictionary<string,string>>(ResponseBody);
+                DeserializedResponseBody.Add("success",Response.IsSuccessStatusCode.ToString());
+               
+                return DeserializedResponseBody;
+            }
+            else 
+            {
+                return null;
+            }
+            
         }
 
     }
