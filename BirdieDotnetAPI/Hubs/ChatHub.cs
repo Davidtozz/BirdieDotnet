@@ -5,9 +5,12 @@ namespace BirdieDotnetAPI.Hubs
 {
     public class ChatHub : Hub
     {
-
+        // TEST ATTRIBUTE
         public static int ConnectedClients = 0;
 
+        #region EventDispatchers
+
+        // TEST METHOD
         public async Task SendMessage(string message)
         {
             string connectionId = Context.ConnectionId;
@@ -15,8 +18,10 @@ namespace BirdieDotnetAPI.Hubs
             await Clients.All.SendAsync("ReceiveMessage", message, connectionId);
         }
 
+        #endregion 
 
-        // ! DEBUG METHOD
+        #region EventHandlers
+
         public override async Task OnConnectedAsync()
         {
             // Perform any desired tracking or logic when a client connects
@@ -44,6 +49,8 @@ namespace BirdieDotnetAPI.Hubs
 
             await base.OnDisconnectedAsync(exception);
         }
+
+        #endregion
 
     }
 }

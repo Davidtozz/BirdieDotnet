@@ -148,7 +148,7 @@ namespace BirdieDotnetAPI.Controllers
 
             using MySqlCommand Command = Connection.CreateCommand();
 
-            Command.CommandText = "SELECT user.name, user.password FROM user WHERE user.name = @name AND user.password = @psw;";
+            Command.CommandText = "SELECT users.username, users.password FROM users WHERE users.username = @name AND users.password = @psw;";
             Command.Parameters.AddWithValue("@name", user.Name);
             Command.Parameters.AddWithValue("@psw", user.Psw);
             if (Command.ExecuteScalar() != null)
