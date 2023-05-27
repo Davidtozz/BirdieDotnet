@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BirdieDotnetCLI.Utils.Menu
+namespace BirdieDotnetCLI.Utils
 {
     public sealed class Menu
     {
@@ -63,13 +63,13 @@ namespace BirdieDotnetCLI.Utils.Menu
             MenuTitle = title;
             return this;
         }
-    
+
         public Menu OnOptionSelected()
         {
             throw new NotImplementedException();
-            
+
         }
-        
+
     }
 
 }

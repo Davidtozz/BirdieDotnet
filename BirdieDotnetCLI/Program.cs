@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text;
 using BirdieDotnetCLI.Models;
 using BirdieDotnetCLI.Services;
-using BirdieDotnetCLI.Utils.Menu;
+using BirdieDotnetCLI.Utils;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 

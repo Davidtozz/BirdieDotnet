@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,10 +11,17 @@ namespace BirdieDotnetCLI.Services
 {
     public class ChatService
     {
+        
+        SignalRService signalRService;
 
-        public async Task ConnectToChatHub(User user)
+        public ChatService(SignalRService signalRService)
         {
-            SignalRService.StartConnection();
+            this.signalRService = signalRService;
+        }
+        
+        public async Task ConnectToChatHub() 
+        {
+            await signalRService.StartConnection();
         }
 
         public async Task DisconnectToChatHub()
