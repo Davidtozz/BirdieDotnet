@@ -6,7 +6,7 @@ namespace BirdieDotnetAPI.Hubs
     public class ChatHub : Hub
     {
         // TEST ATTRIBUTE
-        public static int ConnectedClients = 0;
+        public static uint ConnectedClients = 0;
 
         #region EventDispatchers
 

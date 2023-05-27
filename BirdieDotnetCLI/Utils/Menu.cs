@@ -67,6 +67,7 @@ namespace BirdieDotnetCLI.Utils.Menu
         public Menu OnOptionSelected()
         {
             throw new NotImplementedException();
+            
         }
         
     }

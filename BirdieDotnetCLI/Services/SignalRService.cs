@@ -35,7 +35,12 @@ namespace BirdieDotnetCLI.Services
             {
                 Console.WriteLine(ex.Message);
             }
+        }
 
+        public async Task StopConnection()
+        {
+            await Connection.StopAsync();
+            await Connection.DisposeAsync();
         }
 
         #region EventDispatchers
@@ -43,16 +48,10 @@ namespace BirdieDotnetCLI.Services
         public async Task SendUserInput() // TEST METHOD
         {
             string input;
-            do
-            {
-                input = Console.ReadLine() ?? "_";
-                await Connection.InvokeAsync("SendMessage", input);
-            }
-            while (input != "exit");
-
-            // Interrupt SignalR if input == "exit"
-            await Connection.StopAsync();
-            await Connection.DisposeAsync();
+            
+            input = Console.ReadLine() ?? "_";
+            await Connection.InvokeAsync("SendMessage", input);
+            
         }
 
         #endregion
