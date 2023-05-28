@@ -10,11 +10,9 @@ internal static class Program
 {
     public static async Task Main()
     {
-        SignalRService signalRConnection = new("http://localhost:5069/chathub");
+
+        var chatService = new ChatService(HubUrl: "http://localhost:5069/chathub");
         
-        /* Menu AuthenticationMenu = new Menu()
-                                     .withTitle("Welcome to BirdieDotnet!")
-                                     .withOptions("Login", "Register"); */
         #region WelcomePage
 
         Console.WriteLine("Welcome to BirdieDotnet! \n1. Login\n2. Register");
@@ -38,13 +36,30 @@ internal static class Program
         switch (UserChoice)
         {
             case 1:
+
+                chatService.currentUser = user;
+
+
                 result = UserService.AuthorizeUser(ref user, atEndpoint: "/login"); //TODO needs fix UserService
-                ShowConversations();
+                user.ConnectionId = await chatService.StartConnection();
+
+                Console.WriteLine($"{user.Name} : {user.ConnectionId}\n----------------------------------");
+
+                while(true) 
+                {
+                    Console.Write($"\u001b[1;36m{user.Name}:\u001b[0m ");
+                    
+                    var text = Console.ReadLine();
+                    
+                    await chatService.SendMessage(text, user);
+                    
+                }
+
 
                 break;
             case 2:
                  result = UserService.AuthorizeUser(ref user, atEndpoint: "/register"); //TODO needs fix UserService
-
+                await chatService.StartConnection();
                 break;
             default:
                 Console.WriteLine("Invalid choice. Retry");

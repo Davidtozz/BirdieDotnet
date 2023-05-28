@@ -14,20 +14,21 @@ namespace BirdieDotnetCLI.Utils
     {
         public static readonly HttpClient _httpClient = new();
 
-        // Multi-purpose method 
-        public static async Task<Dictionary<string, string>> SendAuthorizationRequest(string url, string data)
+       
+        public static async Task<Dictionary<string, object>> SendAuthorizationRequest(string url, string data)
         {
             using var Http = _httpClient;
 
             var requestContent = new StringContent(data, Encoding.UTF8, "application/json");
             var Response = await Http.PostAsync(url, requestContent);
             var ResponseBody = await Response.Content.ReadAsStringAsync();
-            var DeserializedResponseBody = JsonConvert.DeserializeObject<Dictionary<string, string>>(ResponseBody) ?? new Dictionary<string, string>();
+            var DeserializedResponseBody = JsonConvert.DeserializeObject<Dictionary<string, object>>(ResponseBody) ?? new Dictionary<string, object>();
             DeserializedResponseBody.Add("status", Response.IsSuccessStatusCode.ToString());
 
             return DeserializedResponseBody;
         }
 
+        //TODO test method
         public static string SendAuthorizationRequest(string url, string data, string token)
         {
             using var httpClient = _httpClient;

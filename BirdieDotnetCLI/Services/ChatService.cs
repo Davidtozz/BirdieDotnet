@@ -1,42 +1,122 @@
-﻿using System;
+﻿using BirdieDotnetCLI.Models;
+using Microsoft.AspNetCore.SignalR.Client;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BirdieDotnetCLI.Models;
-using BirdieDotnetCLI.Services;
 
 namespace BirdieDotnetCLI.Services
 {
-    public class ChatService
+    public sealed class ChatService : IDisposable
     {
         
-        SignalRService signalRService;
+        private HubConnection Connection;
+        public User currentUser { get; set;}
+        private bool disposedValue;
 
-        public ChatService(SignalRService signalRService)
+        public ChatService(string HubUrl)
         {
-            this.signalRService = signalRService;
+            Connection = new HubConnectionBuilder()
+            .WithUrl(HubUrl)
+            .WithAutomaticReconnect()
+            .Build();
         }
+
+        public async Task<string> StartConnection()
+        {
+            RegisterHandlers();
+
+            try
+            {
+                await Connection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return Connection.ConnectionId;
+        }
+
+        public async Task StopConnection()
+        {
+            await Connection.StopAsync();
+            await Connection.DisposeAsync();
+        }
+
+        private void RegisterHandlers()
+        {
+            // Registering handlers
+            Connection.On<string, string, User>("ReceiveMessage", OnReceiveMessage);
+            Connection.On<User>("UserDisconnected", OnUserDisconnected);
+        }
+
         
-        public async Task ConnectToChatHub() 
+
+
+        #region EventDispatchers
+
+        public async Task SendMessage(string text, User sender)
         {
-            await signalRService.StartConnection();
+            await Connection.InvokeAsync("SendMessage", text, sender);
+            Console.WriteLine(); // Add a line break after sending a message
         }
 
-        public async Task DisconnectToChatHub()
+        #endregion
+
+        #region EventHandlers
+
+        private void OnReceiveMessage(string connectionId, string message, User fromUser)
         {
-            throw new NotImplementedException();
+            if (connectionId != currentUser.ConnectionId)
+            {
+                Console.WriteLine($"\n\u001b[32m{fromUser.Name}:\u001b[0m {message}");
+            }
+            /*else
+            {
+                Console.WriteLine($"\u001b[32m (You):\u001b[0m {message}");
+            }*/
         }
 
-        public async Task SendMessage()
+
+
+        private void OnUserDisconnected(User disconnectingUser)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"User \u001b[32m{disconnectingUser.Name}\u001b[0m disconnected");
         }
 
-        public async Task<List<string>> GetChatHistory()
+        #endregion
+
+
+        private void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~SignalRService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
     }

@@ -17,9 +17,9 @@ namespace BirdieDotnetCLI.Services
             string serializedUser = JsonConvert.SerializeObject(user);
             var response = Task.Run(async () => await UserHelper.SendAuthorizationRequest($"http://localhost:5069/api/user{atEndpoint}", serializedUser)).Result;
 
-            if (bool.Parse(response["status"]))
+            if (bool.Parse((string) response["status"]))
             {
-                user.AuthorizationToken = response["token"];
+                user.AuthorizationToken = (string) response["token"];
                 Console.WriteLine("Operation success!");
                 return true;
             }

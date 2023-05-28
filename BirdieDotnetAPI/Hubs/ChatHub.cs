@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using BirdieDotnetAPI.Models;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
 namespace BirdieDotnetAPI.Hubs
@@ -11,11 +12,11 @@ namespace BirdieDotnetAPI.Hubs
         #region EventDispatchers
 
         // TEST METHOD
-        public async Task SendMessage(string message)
+        public async Task SendMessage(string message, User fromUser)
         {
             string connectionId = Context.ConnectionId;
 
-            await Clients.All.SendAsync("ReceiveMessage", message, connectionId);
+            await Clients.All.SendAsync("ReceiveMessage", connectionId , message, fromUser);
         }
 
         #endregion 

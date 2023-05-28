@@ -1,4 +1,5 @@
 using BirdieDotnetAPI.Hubs;
+//using BirdieDotnetAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
@@ -18,6 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 
 builder.Services.AddSingleton(new MySqlConnection(connectionString));
+//builder.Services.AddSingleton<ConversationService>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 builder.Services.AddSignalR();
@@ -65,5 +67,3 @@ app.MapHub<ChatHub>("/chathub");
 app.MapControllers();
 
 app.Run();
-
-

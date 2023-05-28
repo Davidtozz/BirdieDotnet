@@ -5,77 +5,80 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Text;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace BirdieDotnetAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public sealed class ConversationController : Controller
+    public sealed class ConversationsController : Controller
     {
         
         public readonly MySqlConnection _connection;
+        //public readonly ConversationService _conversationService;
 
-        public ConversationController(MySqlConnection connection)
+        public ConversationsController(MySqlConnection connection/*, ConversationService conversationService*/)
         {
             _connection = connection;
-
+            //_conversationService = conversationService;
         }
 
         // Conversation-related routes
-        [HttpGet]
-        [Route("conversations")]
+        [HttpGet] //! /api/conversations
         public IActionResult GetConversations()
         {
             using MySqlConnection Connection = _connection;
 
-            try 
+            try
             {
                 Connection.Open();
             }
-            catch(MySqlException)
+            catch (MySqlException)
             {
                 return StatusCode(500, "Internal server error");
             }
 
             using MySqlCommand Command = Connection.CreateCommand();
-            List<Conversation> ConversationsList = new();
+            StringBuilder ConversationsList = new();
 
-            //! selects all conversations and their respective participant's id
-            Command.CommandText = "SELECT c.id AS conversation_id, c.name AS conversation_name, GROUP_CONCAT(p.user_id ORDER BY p.user_id) AS participant_ids, c.created_at FROM Conversations c JOIN Participants p ON c.id = p.conversation_id GROUP BY c.id;";
+            //! selects all conversations and their respective participants' id
+            Command.CommandText = "SELECT c.id AS conversation_id, c.name AS conversation_name, GROUP_CONCAT(p.user_id ORDER BY p.user_id) AS participant_ids, c.created_at FROM conversations AS c JOIN Participants AS p ON c.id = p.conversation_id  GROUP BY c.id;";
             var reader = Command.ExecuteReader();
 
-            if (reader.Read())
+            while (reader.Read())
             {
                 var conversation = new Conversation
                 {
                     Id = reader.GetInt32("conversation_id"),
                     Name = reader.GetString("conversation_name"),
                     CreatedAt = reader.GetDateTime("created_at"),
-                    ParticipantsIds = reader.GetString("participant_ids").Split(',')
-                                                                         .Select(int.Parse)
-                                                                         .ToList()
-                    
+                    ParticipantsIds = reader.GetString("participant_ids")
+                                            .Split(',')
+                                            .Select(int.Parse)
+                                            .ToList()
                 };
 
-                ConversationsList.Add(conversation);
+                ConversationsList.Append($"{JsonConvert.SerializeObject(conversation)},\n");
             }
 
-            var SerializedConversationsList = JsonConvert.SerializeObject(ConversationsList);
-
-            return Ok(SerializedConversationsList);
-        }
-
-        /*[HttpGet]
-        [Route("conversations/{conversationId}")]
-        public IActionResult GetConversationById(int conversationId)
-        {
-            // Implementation
+            return Ok(ConversationsList.ToString());
         }
 
         [HttpPost]
         [Route("conversations")]
         public IActionResult CreateConversation([FromBody] Conversation conversation)
+        {
+
+
+            return Ok();
+            // Implementation
+        }
+
+
+        /*[HttpGet]
+        [Route("conversations/{conversationId}")]
+        public IActionResult GetConversationById(int conversationId)
         {
             // Implementation
         }
