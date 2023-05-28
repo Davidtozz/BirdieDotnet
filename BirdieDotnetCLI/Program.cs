@@ -22,6 +22,8 @@ internal static class Program
 
         Console.WriteLine("Welcome to BirdieDotnet! \n1. Login\n2. Register");
         
+        //TODO          add proper validation checks
+
         int UserChoice = int.Parse(Console.ReadLine() ?? "0");
 
         Console.WriteLine("Username: ");
@@ -30,6 +32,7 @@ internal static class Program
         Console.WriteLine("Password: ");
         string Password = Console.ReadLine() ?? string.Empty;
 
+        // -------------------------------------------------------- //
         #endregion
 
         User user = new User(Username, Password);
@@ -63,29 +66,11 @@ internal static class Program
                 */
 
             case 1:
-                result = UserService.LoginUser(user).Result; //TODO needs fix UserService
-
-                if (result)
-                {
-                    Console.WriteLine($"Logged in!\n TOKEN: {user.AuthorizationToken}");
-                }
-                else 
-                {
-                    Console.WriteLine("Login unsuccessful.");
-                }
+                result = UserService.AuthorizeUser(ref user, atEndpoint: "/login"); //TODO needs fix UserService
 
                 break;
             case 2:
-                 result = UserService.RegisterUser(user).Result; //TODO needs fix UserService
-
-                if (result)
-                {
-                    Console.WriteLine($"Logged in!\n TOKEN: {user.AuthorizationToken}");
-                }
-                else
-                {
-                    Console.WriteLine("Login unsuccessful.");
-                }
+                 result = UserService.AuthorizeUser(ref user, atEndpoint: "/register"); //TODO needs fix UserService
 
                 break;
             default:

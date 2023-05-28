@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Runtime.InteropServices;
+using BirdieDotnetAPI.Helpers;
 
 namespace BirdieDotnetAPI.Controllers
 {
@@ -109,7 +110,7 @@ namespace BirdieDotnetAPI.Controllers
         //TODO fix Authorize attributes errors
 
         [AllowAnonymous]
-        [HttpPost("new")] //! /api/user/new
+        [HttpPost("register")] //! /api/user/new
         public IActionResult RegisterUser([FromBody] User user, IConfiguration configuration)
         {
             //! debug
@@ -130,19 +131,20 @@ namespace BirdieDotnetAPI.Controllers
             using MySqlCommand Command = Connection.CreateCommand();
             Command.CommandText = "SELECT * FROM users WHERE users.username = @name;";
             Command.Parameters.AddWithValue("@name", user.Name);
-            Command.Parameters.AddWithValue("@psw", user.Psw);
+            
 
-            if (Command.ExecuteScalar() != null) return Ok("User already exists");
+            if (Command.ExecuteScalar() != null) return StatusCode(401,"User already exists");
 
             #endregion
 
             #region CreateNewUser
             
             Command.CommandText = "INSERT INTO users (users.username, users.password) VALUES (@name, @psw);";
+            Command.Parameters.AddWithValue("@psw", user.Psw);
             int RowsAffected = Command.ExecuteNonQuery();
             Connection.Close();
 
-            return (RowsAffected > 0) ? Ok(GenerateJwtToken(ref user)) : StatusCode(500, "Error while adding user");           
+            return (RowsAffected > 0) ? Ok(UserHelper.GenerateJwtToken(user, _configuration)) : StatusCode(500, "Error while adding user");           
             #endregion
         }
 
@@ -188,35 +190,5 @@ namespace BirdieDotnetAPI.Controllers
             }
         }
 
-        private object GenerateJwtToken(ref User user)
-        {
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var configuration = _configuration;
-
-            // Key from appsettings.json
-            byte[] key = new byte[32];
-            key = Encoding.ASCII.GetBytes(configuration["Jwt:Key"]);
-
-            // Create the token descriptor
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                        new Claim(ClaimTypes.Name, user.Name)
-                    }),
-                Expires = DateTime.UtcNow.AddDays(1), // expiration date
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            };
-
-            // Generate the token
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            // Write the token as a string
-            var tokenString = tokenHandler.WriteToken(token);
-
-            return new { Token = tokenString };
-        }
     }
 }
