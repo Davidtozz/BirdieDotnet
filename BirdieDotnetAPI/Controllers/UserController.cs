@@ -29,7 +29,9 @@ namespace BirdieDotnetAPI.Controllers
             _configuration = configuration;
         }
 
-        [Authorize(Roles = "Admin")]
+        //TODO Configure Authorize attributes 
+
+        //[Authorize]
         [HttpGet] //! /api/user
         public IActionResult GetAllUsers()
         {
@@ -65,7 +67,7 @@ namespace BirdieDotnetAPI.Controllers
             return Ok(SerializedUserList);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize]
         [HttpGet("{id}")] //! /api/user/{id}
         public IActionResult GetUserById(int id)
         {
@@ -105,9 +107,6 @@ namespace BirdieDotnetAPI.Controllers
             var JsonResult = (user != null) ? JsonConvert.SerializeObject(user) : "";
             return Ok(JsonResult);
         }
-
-
-        //TODO fix Authorize attributes errors
 
         [AllowAnonymous]
         [HttpPost("register")] //! /api/user/new
@@ -180,7 +179,7 @@ namespace BirdieDotnetAPI.Controllers
                 //Console.WriteLine("Closing connection...");
                 Connection.Close();
 
-                return Ok(GenerateJwtToken(ref user));
+                return Ok(UserHelper.GenerateJwtToken(user, _configuration));
 
             }
             else

@@ -31,6 +31,12 @@ namespace BirdieDotnetCLI.Services
             
         }
 
+        public static void ShowConversations(User user)
+        {
+            throw new NotImplementedException();    
+        }
+       
+
     }
 
     

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc.Controllers;
 using MySql.Data.MySqlClient;
 using BirdieDotnetAPI.Models;
 using MySql.Data;
@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace BirdieDotnetAPI.Helpers
 {
-    public static class UserHelper : ControllerBase
+    public static class UserHelper
     {
 
         public static object GenerateJwtToken(User user, IConfiguration appConfiguration)
