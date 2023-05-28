@@ -53,9 +53,6 @@ namespace BirdieDotnetCLI.Services
             Connection.On<User>("UserDisconnected", OnUserDisconnected);
         }
 
-        
-
-
         #region EventDispatchers
 
         public async Task SendMessage(string text, User sender)
@@ -79,8 +76,6 @@ namespace BirdieDotnetCLI.Services
                 Console.WriteLine($"\u001b[32m (You):\u001b[0m {message}");
             }*/
         }
-
-
 
         private void OnUserDisconnected(User disconnectingUser)
         {
