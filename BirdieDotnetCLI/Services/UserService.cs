@@ -35,10 +35,5 @@ namespace BirdieDotnetCLI.Services
         {
             throw new NotImplementedException();    
         }
-       
-
     }
-
-    
-
 }

@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Runtime.InteropServices;
 using BirdieDotnetAPI.Helpers;
+using System.Data;
+using System.Diagnostics;
 
 namespace BirdieDotnetAPI.Controllers
 {
@@ -38,12 +40,13 @@ namespace BirdieDotnetAPI.Controllers
             List<User> UserList = new();
             using MySqlConnection connection = _connection;
             using MySqlCommand command = connection.CreateCommand();
-            try 
+            try // TODO add rate limiter!!
             {
-                connection.Open();
+                connection.Open();   
             }
-            catch (MySqlException) 
+            catch (MySqlException ex) 
             {
+                Console.WriteLine(ex.Message + "\n\n I failed here!");
                 return StatusCode(500, "Internal server error");
             }
             
@@ -55,7 +58,7 @@ namespace BirdieDotnetAPI.Controllers
             {
                 var user = new User{
                     Id = reader.GetInt32("id"),
-                    Name = reader.GetString("name"),
+                    Name = reader.GetString("username"),
                     Psw = reader.GetString("password")
                 };
                 UserList.Add(user);
