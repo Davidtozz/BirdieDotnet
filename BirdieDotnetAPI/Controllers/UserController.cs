@@ -37,6 +37,7 @@ namespace BirdieDotnetAPI.Controllers
         [HttpGet] //! /api/user
         public IActionResult GetAllUsers()
         {
+            Console.WriteLine("Received a GET");
             List<User> UserList = new();
             using MySqlConnection connection = _connection;
             using MySqlCommand command = connection.CreateCommand();
@@ -46,26 +47,32 @@ namespace BirdieDotnetAPI.Controllers
             }
             catch (MySqlException ex) 
             {
-                Console.WriteLine(ex.Message + "\n\n I failed here!");
+                Console.WriteLine(ex.Message);
                 return StatusCode(500, "Internal server error");
             }
-            
-            command.CommandText = "SELECT * FROM users";
-            using MySqlDataReader reader = command.ExecuteReader();
 
-            // Loop through query results
-            while (reader.Read())
+            try 
             {
-                var user = new User{
-                    Id = reader.GetInt32("id"),
-                    Name = reader.GetString("username"),
-                    Psw = reader.GetString("password")
-                };
-                UserList.Add(user);
+                command.CommandText = "SELECT * FROM users";
+                using MySqlDataReader reader = command.ExecuteReader();
+                // Loop through query results
+                while (reader.Read())
+                {
+                    var user = new User{
+                        Id = reader.GetInt32("id"),
+                        Name = reader.GetString("username"),
+                        Psw = reader.GetString("password")
+                    };
+                    UserList.Add(user);
+                }
+            } 
+            catch (Exception ex) { //! DEBUG
+                Console.WriteLine(ex.Message);
             }
             
+            
             connection.Close();
-            var SerializedUserList = JsonConvert.SerializeObject(UserList);
+            string SerializedUserList = JsonConvert.SerializeObject(UserList);
 
             return Ok(SerializedUserList);
         }
@@ -113,7 +120,7 @@ namespace BirdieDotnetAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")] //! /api/user/new
-        public IActionResult RegisterUser([FromBody] User user, IConfiguration configuration)
+        public IActionResult RegisterUser([FromBody] User user)
         {
             //! debug
             //Console.WriteLine($"user:\n{user.Name}\n{user.Psw}");      

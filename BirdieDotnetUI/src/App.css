@@ -55,6 +55,7 @@ svg:hover .icon-background {
   flex-direction: row;
   height: 100%;
   overflow: hidden;
+
 }
 
 
@@ -132,7 +133,8 @@ main {
   background-color: var(--block-bg-color);
   border-right: 1px solid var(--container-stroke);
   flex: 3;
-  overflow: scroll;  
+  overflow: scroll; 
+  border-top-left-radius: 15px; 
 }
 
 .contact-card {
@@ -220,6 +222,7 @@ main {
   justify-content: center;
   height: 100px;
   background-color: var(--block-bg-color);
+  
 }
 
 input {

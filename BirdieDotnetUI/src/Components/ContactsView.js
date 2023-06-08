@@ -8,42 +8,46 @@ function ContactsView (props) {
 
 
     useEffect(() => {
-        fetchContacts();
-    })
 
-    const fetchContacts = () => {
-        
-        fetch("http://localhost:5069/api/user")
-        .then(response => response.json())
-        .then(data => setContacts(data))
-        .catch(err => console.log("Error fetching contacts", err))
-    }
+        //? Due to developer mode, Fetch is called twice in useEffect(). 
+        //? So we abort the second concurrent request:
+        const abortController = new AbortController();
+
+        const url = "http://localhost:5069/api/user";
+
+        const fetchData = async () => {
+            try {
+                const response = await fetch(url, {method: 'GET', 
+                signal: abortController.signal});
+                const json = await response.json();
+                setContacts(json)
+            } catch (error) {
+                console.log("error",error);
+            }
+        }
+
+        fetchData();
+
+
+        return () => abortController.abort();
+    },[])
 
     return <>
         <div className='list-view'>
             <div className='search-card'>
                 <input type='text' placeholder='Search' className='search-field' />
             </div>
-
-
             {
-                contacts.map((contact, _) => 
-                    
-                    
-                     <Contact contactname={contact["Name"]} header={false} picurl={'https://source.unsplash.com/random/500x500/?profile,avatar'}/>
+                contacts.map((contact, index) => 
+                    <Contact 
+                    contactname={contact["Name"]} ù
+                    header={false} 
+                    key={index}
+                    picurl={`https://source.unsplash.com/random/500x500/?profile$${index}`}/>
                 )
             }
-
-
-
-
-
-
         </div>
-    
     </>
-
-
 }
 
 export default ContactsView; 
