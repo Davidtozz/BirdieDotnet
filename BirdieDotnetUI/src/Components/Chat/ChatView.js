@@ -1,5 +1,5 @@
 import MessageBubble from "./MessageBubble";
-import Contact from "./Contact"
+import Contact from "../Contacts/Contact"
 import { useState } from 'react'; 
 
 function ChatView(props) {

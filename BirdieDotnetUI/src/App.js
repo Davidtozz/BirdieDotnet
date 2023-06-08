@@ -1,7 +1,7 @@
 
-import SideBar from './Components/SideBar.js';
-import ContactsView from './Components/ContactsView.js';
-import ChatView from "./Components/ChatView.js";
+import SideBar from './Components/Sidebar/SideBar.js';
+import ContactsView from './Components/Contacts/ContactsView.js';
+import ChatView from "./Components/Chat/ChatView.js";
 import './App.css';
 
 function App() {

@@ -92,13 +92,13 @@ svg:hover .icon-background {
   content: "";
   position: absolute;
   top: 50%;
-  left: 2.5px; /* Adjust the position as needed */
+  left: 2.5px; 
   transform: translateY(-50%);
   height: 1.8rem;
   width: 2px;
   border-radius: 2px;
-  background-color: transparent; /* Make it invisible */
-  transition: background-color 0.3s; /* Add transition for smooth effect */
+  background-color: transparent; 
+  transition: background-color 0.3s; 
 }
 
 .sidebar-item-container:hover::after {
@@ -265,6 +265,7 @@ body {
   scroll-behavior: smooth;
 }
 
+/* Message tail */
 .triangle {
 	width: 0;
 	height: 0;
@@ -277,6 +278,7 @@ body {
 	rotate: 180deg;
 }
 
+/* Message tail of others' message */
 .triangle.reversed {
 	width: 0;
 	height: 0;

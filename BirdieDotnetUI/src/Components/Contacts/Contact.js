@@ -1,4 +1,4 @@
-import {ReactComponent as Pinned} from '../svg/pinned.svg';
+import {ReactComponent as Pinned} from '../svg/Contact/pinned.svg';
 
 const Contact = ({picurl: url, contactname: name, header: isHeader}) => {
 

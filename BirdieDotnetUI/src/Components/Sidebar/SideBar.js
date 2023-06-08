@@ -1,6 +1,6 @@
-import {ReactComponent as ProfileIcon} from '../Profile icon.svg';
-import {ReactComponent as SettingsIcon} from '../Settings icon.svg';
-import {ReactComponent as BirdieLogoShort} from '../Birdie (short).svg';
+import {ReactComponent as ProfileIcon} from '../static/svg/SideBarItems/Profile icon.svg';
+import {ReactComponent as SettingsIcon} from '../static/svg/SideBarItems/Settings icon.svg';
+import {ReactComponent as BirdieLogoShort} from '../static/svg/Birdie.svg';
 import SideBarItem from './SideBarItem.js';
 
 function SideBar(props) {
