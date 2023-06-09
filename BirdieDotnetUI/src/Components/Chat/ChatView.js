@@ -7,6 +7,8 @@ function ChatView(props) {
 
     const [messages, setMessages] = useState([]);
 
+    
+
 /*     useEffect(() => {
        console.log(messages);
     },[messages]) */
@@ -23,8 +25,8 @@ function ChatView(props) {
 
     return <>
         <div className='chat-view'>
-            <header className="contact-card chat-header">
-                <Contact header={true} picurl={'https://source.unsplash.com/random/500x500/?pic'}/>
+        <header className="contact-card chat-header">                      {/* Images are random now, but won't later */} 
+                <Contact contactName={props.selectedContact} header={true} picUrl={'https://source.unsplash.com/random/500x500/?pic'}/>
             </header>
             
             <div className="message-list">

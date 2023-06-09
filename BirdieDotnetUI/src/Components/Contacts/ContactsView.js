@@ -22,7 +22,7 @@ function ContactsView (props) {
                 const json = await response.json();
                 setContacts(json)
             } catch (error) {
-                console.log("error",error);
+                //console.log("error",error);
             }
         }
 
@@ -32,6 +32,11 @@ function ContactsView (props) {
         return () => abortController.abort();
     },[])
 
+
+    const selectedContact = (contact) => {
+        props.onContactSelect(contact);
+    };
+
     return <>
         <div className='list-view'>
             <div className='search-card'>
@@ -40,10 +45,11 @@ function ContactsView (props) {
             {
                 contacts.map((contact, index) => 
                     <Contact 
-                    contactname={contact["Name"]} ù
+                    onClick={() => selectedContact(contact.Name)}
+                    contactName={contact["Name"]} 
                     header={false} 
                     key={index}
-                    picurl={`https://source.unsplash.com/random/500x500/?profile$${index}`}/>
+                    picUrl={`https://source.unsplash.com/random/500x500/?profile$${index}`}/>
                 )
             }
         </div>

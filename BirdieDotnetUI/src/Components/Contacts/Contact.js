@@ -1,19 +1,19 @@
-import {ReactComponent as Pinned} from '../svg/Contact/pinned.svg';
-
-const Contact = ({picurl: url, contactname: name, header: isHeader}) => {
+import {ReactComponent as Pinned} from '../../static/svg/Contact/pinned.svg';
+// {picurl: url, contactname: name, header: isHeader}
+const Contact = (props) => {
 
     return <>
-        <div className='contact-card'>
+        <div onClick={props.onClick} className='contact-card'>
             
             <div className="propic-wrapper">
-                <img className='propic' src={url} alt='pic'/>
+                <img className='propic' src={props.picUrl} alt='pic'/>
             </div>
             
             <div className="contact-details">
-            <h2>{name}</h2>                    {/* TODO fetch contanct name */}
+            <h2>{props.contactName}</h2>                    {/* TODO fetch contanct name */}
                 <h4>Dolor sit amet...</h4>   {/* TODO listen to event */} 
             </div>
-            {!isHeader ?
+            {!props.isHeader ?
             <div className="message-info">
                 <div className="last-message-time">6:50</div> {/* TODO fetch last message sent time */}
                 <Pinned className="pin-indicator"/> {/* TODO Toggle switch */}

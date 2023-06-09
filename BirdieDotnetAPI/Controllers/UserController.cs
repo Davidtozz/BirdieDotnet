@@ -38,7 +38,7 @@ namespace BirdieDotnetAPI.Controllers
         public IActionResult GetAllUsers()
         {
             Console.WriteLine("Received a GET");
-            List<User> UserList = new();
+            
             using MySqlConnection connection = _connection;
             using MySqlCommand command = connection.CreateCommand();
             try // TODO add rate limiter!!
@@ -51,26 +51,20 @@ namespace BirdieDotnetAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
 
-            try 
+            
+            command.CommandText = "SELECT username FROM users";
+            using MySqlDataReader reader = command.ExecuteReader();
+            // Loop through query results
+            List<User> UserList = new();
+            while (reader.Read())
             {
-                command.CommandText = "SELECT * FROM users";
-                using MySqlDataReader reader = command.ExecuteReader();
-                // Loop through query results
-                while (reader.Read())
-                {
-                    var user = new User{
-                        Id = reader.GetInt32("id"),
-                        Name = reader.GetString("username"),
-                        Psw = reader.GetString("password")
-                    };
-                    UserList.Add(user);
-                }
-            } 
-            catch (Exception ex) { //! DEBUG
-                Console.WriteLine(ex.Message);
+                var user = new User{
+                    //Id = reader.GetInt32("id"),
+                    Name = reader.GetString("username"),
+                    //Psw = reader.GetString("password")
+                };
+                UserList.Add(user); //TODO find a better replacement to List
             }
-            
-            
             connection.Close();
             string SerializedUserList = JsonConvert.SerializeObject(UserList);
 
