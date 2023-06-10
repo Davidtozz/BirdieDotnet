@@ -18,7 +18,7 @@ builder.Services.AddSingleton(new MySqlConnection(connectionString));
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 builder.Services.AddSignalR();
-/*
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
                 .AllowCredentials();
         });
 });
-*/
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters
     {

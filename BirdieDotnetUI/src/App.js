@@ -2,6 +2,7 @@
 import SideBar from './Components/Sidebar/SideBar.js';
 import ContactsView from './Components/Contacts/ContactsView.js';
 import ChatView from "./Components/Chat/ChatView.js";
+import PurpleBand from "./Components/PurpleBand.js";
 import './App.css';
 import { useState } from 'react';
 
@@ -16,11 +17,9 @@ function App() {
 
   return (
     <>
-      <SideBar />
-      <main>
-			<div className='purple-band-wrapper'>
-				<div className='purple-band' />
-			</div>
+      	<SideBar />
+      	<main>
+			<PurpleBand />
 			<div className='content-wrapper'>
 				<ContactsView onContactSelect={handleSelectedContact} />
 				<ChatView selectedContact={selectedContact} />

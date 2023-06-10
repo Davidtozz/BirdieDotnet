@@ -364,3 +364,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /BirdieDotnetAPI/.vscode
+BirdieDotnet.code-workspace
+BirdieDotnetAPI.code-workspace
