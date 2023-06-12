@@ -3,48 +3,49 @@ import Contact from "../Contacts/Contact";
 import { useEffect, useState } from 'react'; 
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
+//TODO separate Hub logic into ChatHubService
+
+const hubConnection = new HubConnectionBuilder()
+  .withUrl("http://localhost:5069/chathub")
+  .configureLogging(LogLevel.Information)
+  .withAutomaticReconnect()
+  .build();
+
 function ChatView(props) {
+    
     const [messages, setMessages] = useState([]);
-    const hubConnection = new HubConnectionBuilder()
-        .withUrl("http://localhost:5069/chathub")
-        .configureLogging(LogLevel.Information)
-        .withAutomaticReconnect()
-        .build();
 
   useEffect(() => {
 
-    const createHubConnection = async () => {
-      try {
-        await hubConnection.start();
-        //! DEBUG
-        console.log("Connection to ChatHub established");
-      } catch (err) {
-        console.log(err);
-        setTimeout(createHubConnection, 5000);
-      }
-    };
-
-    createHubConnection();
-
-    //? Handler for SendMessage() server-side method 
-    hubConnection.on("ReceiveMessage", (id, msg, user) => {
-
-        const incomingMessage = {
-            text: msg,
-/*          name: user.name,
-            userId: id, */
-            incoming: true
-        }
-        
-        if(hubConnection.connectionId !== id) {
-            setMessages(prevMessages => [...prevMessages, incomingMessage])
-            console.log(`Received: ${msg} \nfrom: ${user.name}`)
-        }
-
-    })
+    if(hubConnection.state !== "Connected" ) {
+      hubConnection.start()
+      .then(() => {
+        registerHandlers();
+      })
+    }
     
     return () => hubConnection.stop();
-  });
+  },[]);
+
+  const registerHandlers = () => {
+     //? Handler for SendMessage() server-side method 
+     hubConnection.on("ReceiveMessage", onReceiveMessage)
+  }
+
+
+  const onReceiveMessage = (id, msg, user) => {
+
+    const incomingMessage = {
+        text: msg,
+        incoming: true
+    }
+    
+    if(hubConnection.connectionId !== id) {
+        setMessages(prevMessages => [...prevMessages, incomingMessage])
+        console.log(`Received: ${msg} \nfrom: ${user.name}`)
+    }
+
+}
 
   //? Trigger SendMessage server-side method 
   const sendMessage = async (e) => {
@@ -53,7 +54,7 @@ function ChatView(props) {
         //! DEBUG
         console.log(e.target.value);
 
-        hubConnection.invoke("SendMessage", e.target.value, {name: "Jovanotti"});
+        await hubConnection.invoke("SendMessage", e.target.value, {name: "Jovanotti"});
       
         const outgoingMessage = { //TODO manage logged user 
             text: e.target.value,
@@ -96,5 +97,6 @@ function ChatView(props) {
     </>
   );
 }
+
 
 export default ChatView;

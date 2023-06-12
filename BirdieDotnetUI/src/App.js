@@ -5,9 +5,11 @@ import ChatView from "./Components/Chat/ChatView.js";
 import PurpleBand from "./Components/PurpleBand.js";
 import './App.css';
 import { useState } from 'react';
+/* import { QueryClient } from '@tanstack/react-query' */
 
 function App() {
 
+	/* const queryClient = new QueryClient(); */
 	const [selectedContact, setSelectedContact] = useState(null);
 
 	const handleSelectedContact = (contact) => {
@@ -28,5 +30,7 @@ function App() {
     </>
   )
 }
+
+
 
 export default App;
