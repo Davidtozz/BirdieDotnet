@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
-using BirdieDotnetAPI.Models;
+//using BirdieDotnetAPI.Models; //? will be removed soon
+using BirdieDotnetAPI.ModelsEF;
 using System.IdentityModel.Tokens;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,9 @@ using System.Runtime.InteropServices;
 using BirdieDotnetAPI.Helpers;
 using System.Data;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using BirdieDotnetAPI.Data;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace BirdieDotnetAPI.Controllers
 {
@@ -22,96 +26,47 @@ namespace BirdieDotnetAPI.Controllers
     public sealed class UserController : ControllerBase
     {
 
-        private readonly MySqlConnection _connection;
-        private readonly IConfiguration _configuration;
+        private readonly TestContext _context;
+        private readonly IConfiguration _configuration; //? Used signing JWT 
+        
 
-        public UserController(MySqlConnection connection, IConfiguration configuration) 
+        public UserController(TestContext context, IConfiguration configuration) 
         {
-            _connection = connection;
+            _context = context;
             _configuration = configuration;
         }
 
         //TODO Configure Authorize attributes 
 
-        //[Authorize]
-        [HttpGet] //! /api/user
+
+        [HttpGet] //? /api/user
         public IActionResult GetAllUsers()
         {
-            Console.WriteLine("Received a GET");
+            //? Selects all rows in DB
+            var users = _context.Users;
             
-            using MySqlConnection connection = _connection;
-            using MySqlCommand command = connection.CreateCommand();
-            try // TODO add rate limiter!!
-            {
-                connection.Open();   
-            }
-            catch (MySqlException ex) 
-            {
-                Console.WriteLine(ex.Message);
-                return StatusCode(500, "Internal server error");
-            }
-
+            var SerializedUserList = JsonConvert.SerializeObject(users, Formatting.Indented);
             
-            command.CommandText = "SELECT username FROM users";
-            using MySqlDataReader reader = command.ExecuteReader();
-            // Loop through query results
-            List<User> UserList = new();
-            while (reader.Read())
-            {
-                var user = new User{
-                    //Id = reader.GetInt32("id"),
-                    Name = reader.GetString("username"),
-                    //Psw = reader.GetString("password")
-                };
-                UserList.Add(user); //TODO find a better replacement to List
-            }
-            connection.Close();
-            string SerializedUserList = JsonConvert.SerializeObject(UserList);
-
-            return Ok(SerializedUserList);
+            return Ok(SerializedUserList);   
         }
 
-        //[Authorize]
-        [HttpGet("{id}")] //! /api/user/{id}
-        public IActionResult GetUserById(int id)
+        [HttpGet("{id}")] //? /api/user/{id}
+        public async Task<IActionResult> GetUserById(int id)
         {
-            User? user = null;
-            using MySqlConnection connection = _connection;
-            using MySqlCommand command = connection.CreateCommand();
 
-            try
+            var user = await _context.Users.FindAsync(id);
+
+            if(user == null)
             {
-                connection.Open();
-            }
-            catch (MySqlException)
-            {
-                return StatusCode(500, "Internal server error");
+                return NotFound();
             }
 
-            #region SearchUserById
-            command.CommandText = "SELECT * FROM user WHERE id = @id";
-            command.Parameters.AddWithValue("@id", id);
+            var SerializedUser = JsonConvert.SerializeObject(user,Formatting.Indented);
 
-            // Execute the query and retrieve the results
-            using MySqlDataReader results = command.ExecuteReader();
-            
-            // Check if user exists
-            if (results.Read())
-            {
-                user = new User
-                {
-                    Id = results.GetInt32("id"),
-                    Name = results.GetString("name"),
-                    Psw = results.GetString("password")
-                };
-                connection.Close();
-            }
-            #endregion
-
-            var JsonResult = (user != null) ? JsonConvert.SerializeObject(user) : "";
-            return Ok(JsonResult);
+            return Ok(SerializedUser);
         }
 
+        /*
         [AllowAnonymous]
         [HttpPost("register")] //! /api/user/new
         public IActionResult RegisterUser([FromBody] User user)
@@ -191,7 +146,7 @@ namespace BirdieDotnetAPI.Controllers
                 Connection.Close();
                 return StatusCode(StatusCodes.Status401Unauthorized, "Invalid credentials");
             }
-        }
+        }*/
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace BirdieDotnetAPI.Models
 {
+    [Obsolete("Replaced in favor of EF Core")]
     public class Message
     {
         public int Id { get; set; }

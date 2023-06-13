@@ -1,5 +1,10 @@
+using BirdieDotnetAPI.Data;
 using BirdieDotnetAPI.Hubs;
+using BirdieDotnetAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
 using System.Configuration;
@@ -13,9 +18,14 @@ builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddSingleton(new MySqlConnection(connectionString));
-//builder.Services.AddSingleton<ConversationService>();
+//! Replacing in favor of EntityFramework Core
+/* builder.Services.AddSingleton(new MySqlConnection(connectionString)); */
+
+builder.Services.AddDbContext<TestContext>( optionsAction: options => {
+    options.UseMySql(connectionString, ServerVersion.Parse("10.4.28-mariadb"));
+});
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 
 builder.Services.AddSignalR();
 
@@ -31,6 +41,8 @@ builder.Services.AddCors(options =>
         });
 });
 
+
+//TODO encrypt JWT tokens
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -50,17 +62,15 @@ var app = builder.Build();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseStaticFiles();
 app.UseHttpsRedirection();
-
-//app.UseCors();
 
 app.MapHub<ChatHub>("/chathub");
 
-app.MapControllers();
+app.MapControllers(); //? UserController, ConversationController 
 
-    app.Run(); 
+app.Run(); 
 
 

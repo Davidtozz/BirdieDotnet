@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 
 namespace BirdieDotnetAPI.Models
 {
+    [Obsolete("Replaced in favor of EF Core")]
     public class Conversation
     {
         
