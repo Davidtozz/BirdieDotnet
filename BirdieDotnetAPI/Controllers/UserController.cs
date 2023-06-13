@@ -34,8 +34,6 @@ namespace BirdieDotnetAPI.Controllers
         }
 
         //TODO Configure Authorize attributes 
-
-
         [HttpGet] //? /api/user
         public IActionResult GetAllUsers()
         {
@@ -68,7 +66,6 @@ namespace BirdieDotnetAPI.Controllers
         [HttpPost("register")] //! /api/user/register
         public async Task<IActionResult> RegisterUser([FromBody] User user)
         {
-
             //TODO Add Exception handling
 
             var foundUser = await _context.Users.FirstOrDefaultAsync((u) => u.Username == user.Username);

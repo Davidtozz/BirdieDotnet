@@ -27,7 +27,6 @@ namespace BirdieDotnetAPI.Hubs
 
         public override async Task OnConnectedAsync()
         {
-
             string connectionId = Context.ConnectionId;
             ConnectedClients++;
             Console.WriteLine($"Client ({connectionId}) connected. Current clients: {ConnectedClients}");
@@ -35,6 +34,7 @@ namespace BirdieDotnetAPI.Hubs
             await base.OnConnectedAsync();
         }
 
+        #nullable disable 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
 

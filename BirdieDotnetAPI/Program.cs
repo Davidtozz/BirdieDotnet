@@ -1,21 +1,12 @@
 using BirdieDotnetAPI.Data;
 using BirdieDotnetAPI.Hubs;
-using BirdieDotnetAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using MySql.Data.MySqlClient;
-using System.Configuration;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder();
-
-// Add services to the container.
-
-
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 //! Replacing in favor of EntityFramework Core
@@ -24,6 +15,17 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<TestContext>( optionsAction: options => {
     options.UseMySql(connectionString, ServerVersion.Parse("10.4.28-mariadb"));
 });
+
+
+//TODO Configure Identity properly
+/* builder.Services.AddIdentity<User,IdentityRole>()
+    .AddEntityFrameworkStores<TestContext>()
+    .AddDefaultTokenProviders(); */
+
+//builder.Services.AddIdentity<>
+//builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<TestContext>();
+
+
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 
@@ -58,6 +60,17 @@ builder.Services.AddAuthentication(x => {
     };
 });
 
+
+builder.Services.AddAuthorization();
+
+builder.Services.Configure<AuthorizationOptions>(options => {
+    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
+});
+
+
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -69,9 +82,12 @@ app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
 
-app.MapHub<ChatHub>("/chathub");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/chathub").RequireAuthorization(); 
+});
 
-app.MapControllers(); //? UserController, ConversationController 
+app.MapControllers(); //? UserController
 
 app.Run(); 
 

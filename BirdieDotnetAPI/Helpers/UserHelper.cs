@@ -17,12 +17,9 @@ namespace BirdieDotnetAPI.Helpers
         {
 
             var tokenHandler = new JwtSecurityTokenHandler();
-
-            // Key from appsettings.json
             byte[] key = new byte[32];
             key = Encoding.ASCII.GetBytes(appConfiguration["Jwt:Key"]!);
 
-            // Create the token descriptor
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -33,10 +30,8 @@ namespace BirdieDotnetAPI.Helpers
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
 
-            // Generate the token
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            // Write the token as a string
             var tokenString = tokenHandler.WriteToken(token);
 
             return new { Token = tokenString };

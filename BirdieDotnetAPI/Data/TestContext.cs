@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using BirdieDotnetAPI.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BirdieDotnetAPI.Data;
@@ -12,15 +14,16 @@ namespace BirdieDotnetAPI.Data;
 
 #nullable disable
 
-public partial class TestContext : DbContext
+//? 'Test' refers to the current database name.
+public partial class TestContext : DbContext //TODO Implement Identity IdentityDbContext<User, IdentityRole<int>, int>
 {
     public TestContext()
     {
     }
 
-    public TestContext(DbContextOptions<TestContext> options)
-        : base(options)
+    public TestContext(DbContextOptions<TestContext> options) : base(options)
     {
+        
     }
 
     public virtual DbSet<Conversation> Conversations { get; set; }
@@ -30,6 +33,22 @@ public partial class TestContext : DbContext
     public virtual DbSet<Participant> Participants { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    if (!optionsBuilder.IsConfigured)
+    {
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json")
+               .Build();
+
+
+        string connectionString = configuration.GetConnectionString("DefaultConnection");
+        optionsBuilder.UseMySql(connectionString, ServerVersion.Parse("10.4.28-mariadb"));
+    }
+}
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -154,8 +173,10 @@ public partial class TestContext : DbContext
                 .HasColumnName("username");
         });
 
-        OnModelCreatingPartial(modelBuilder);
+        //OnModelCreatingPartial(modelBuilder);
+
+        base.OnModelCreating(modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    //partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
