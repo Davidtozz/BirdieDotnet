@@ -1,12 +1,23 @@
-﻿namespace BirdieDotnetAPI.Models
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace BirdieDotnetAPI.Models;
+
+public partial class User
 {
-    [Obsolete("Replaced in favor of EF Core")]
-    public class User
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Psw { get; set; }
+    public int Id { get; set; }
 
-    }
+    public required string Username { get; set; }
 
+    public required string Password { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    
+    public required string Email { get; set; }
+
+    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+
+    public virtual ICollection<Participant> Participants { get; set; } = new List<Participant>();
 }

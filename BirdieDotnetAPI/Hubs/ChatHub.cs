@@ -6,16 +6,14 @@ namespace BirdieDotnetAPI.Hubs
 {
     public class ChatHub : Hub
     {
+        //TODO Add ASP.NET Identity for 1-to-1 conversations
 
-        //TODO Cache ConnectionId and username for 1-to-1 conversations
-        //TODO Create groups for each individual user 
-
-        // TEST ATTRIBUTE
+        //! TEST ATTRIBUTE
         public static uint ConnectedClients = 0;
 
         #region EventDispatchers
 
-        // TEST METHOD
+        
         public async Task SendMessage(string message, User fromUser)
         {
             string connectionId = Context.ConnectionId;

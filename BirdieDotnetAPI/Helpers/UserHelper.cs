@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
+
 namespace BirdieDotnetAPI.Helpers
 {
     public static class UserHelper
@@ -19,16 +20,16 @@ namespace BirdieDotnetAPI.Helpers
 
             // Key from appsettings.json
             byte[] key = new byte[32];
-            key = Encoding.ASCII.GetBytes(appConfiguration["Jwt:Key"]);
+            key = Encoding.ASCII.GetBytes(appConfiguration["Jwt:Key"]!);
 
             // Create the token descriptor
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                        new Claim(ClaimTypes.Name, user.Name)
-                    }),
-                Expires = DateTime.UtcNow.AddDays(1), // expiration date
+                    new Claim(ClaimTypes.Name, user.Username),
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(30), // expiration date
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
 
@@ -40,7 +41,5 @@ namespace BirdieDotnetAPI.Helpers
 
             return new { Token = tokenString };
         }
-
-
     }
 }

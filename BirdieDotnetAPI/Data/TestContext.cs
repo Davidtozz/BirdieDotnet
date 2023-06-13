@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BirdieDotnetAPI.ModelsEF;
+using BirdieDotnetAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BirdieDotnetAPI.Data;
@@ -10,8 +10,18 @@ namespace BirdieDotnetAPI.Data;
 *    dotnet ef dbcontext scaffold "(connection string here)" Pomelo.EntityFrameworkCore.MySql --context-dir Data --output-dir ModelsEF
 */
 
+#nullable disable
+
 public partial class TestContext : DbContext
 {
+    public TestContext()
+    {
+    }
+
+    public TestContext(DbContextOptions<TestContext> options)
+        : base(options)
+    {
+    }
 
     public virtual DbSet<Conversation> Conversations { get; set; }
 

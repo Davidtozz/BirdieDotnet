@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder();
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -46,26 +46,31 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
+       /*  ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
+        ValidateIssuerSigningKey = true, */
         ValidIssuer = builder.Configuration["Jwt:Issuer"], //dev: localhost
         ValidAudience = builder.Configuration["Jwt:Audience"], //dev: localhost
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseRouting();
+app.UseAuthorization();
+
+
+app.UseExceptionHandler("/");
+
 
 app.MapHub<ChatHub>("/chathub");
 

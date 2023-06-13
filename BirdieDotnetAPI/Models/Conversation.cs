@@ -1,18 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
+﻿using System;
+using System.Collections.Generic;
 
-namespace BirdieDotnetAPI.Models
+namespace BirdieDotnetAPI.Models;
+
+public partial class Conversation
 {
-    [Obsolete("Replaced in favor of EF Core")]
-    public class Conversation
-    {
-        
-        public int Id { get; set; }
-        
-        [Required]
-        public string Name { get; set; }
-        public List<int> ParticipantsIds { get; set; }
-        public DateTime CreatedAt { get; set; }    
-    }
+    public int Id { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public DateTime CreatedAt { get; set; }
+
+    public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+
+    public virtual ICollection<Participant> Participants { get; set; } = new List<Participant>();
 }

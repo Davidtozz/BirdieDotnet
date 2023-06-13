@@ -6,7 +6,9 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Text;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+
+//TODO Migrate controller to use EF Core
 
 namespace BirdieDotnetAPI.Controllers
 {
@@ -25,7 +27,8 @@ namespace BirdieDotnetAPI.Controllers
         }
 
         // Conversation-related routes
-        [HttpGet] //! /api/conversations
+        //! /api/conversations
+        /* [HttpGet] 
         public IActionResult GetConversations()
         {
             using MySqlConnection Connection = _connection;
@@ -63,7 +66,7 @@ namespace BirdieDotnetAPI.Controllers
             }
 
             return Ok(ConversationsList.ToString());
-        }
+        } */
 
         [HttpPost]
         [Route("conversations")]

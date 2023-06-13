@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BirdieDotnetAPI.ModelsEF;
+namespace BirdieDotnetAPI.Models;
 
 public partial class Participant
 {
