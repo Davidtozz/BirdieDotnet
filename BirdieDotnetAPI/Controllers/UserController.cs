@@ -37,9 +37,9 @@ namespace BirdieDotnetAPI.Controllers
 
 
         [HttpGet] //? /api/user
-        public IActionResult GetAllUsers([FromHeader] Dictionary<string, string> headers)
+        public IActionResult GetAllUsers()
         {
-            Console.WriteLine(JsonConvert.SerializeObject(headers));
+            Console.WriteLine(HttpContext.Request.Headers.Authorization);
             //? Selects all rows in DB
             var users = _context.Users;
             

@@ -43,13 +43,15 @@ builder.Services.AddCors(options =>
 
 
 //TODO encrypt JWT tokens
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+builder.Services.AddAuthentication(x => {
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-       /*  ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true, */
+        ValidateIssuer = false, //TODO validate issuer in production
+        ValidateAudience = false, //TODO validate audience in production
+        ValidateIssuerSigningKey = true, 
         ValidIssuer = builder.Configuration["Jwt:Issuer"], //dev: localhost
         ValidAudience = builder.Configuration["Jwt:Audience"], //dev: localhost
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
@@ -62,15 +64,10 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
-
-
-app.UseExceptionHandler("/");
-
 
 app.MapHub<ChatHub>("/chathub");
 
