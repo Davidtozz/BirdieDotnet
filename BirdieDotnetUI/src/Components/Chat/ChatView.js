@@ -4,7 +4,8 @@ import Contact from "../Contacts/Contact";
 import { useEffect, useState } from 'react'; 
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
-//TODO separate Hub logic into ChatHubService
+//TODO migrate Hub logic to ChatHubService
+//TODO migrate jwt cookie storage elsewhere
 
 const hubConnection = new HubConnectionBuilder()
   .withUrl("http://localhost:5069/chathub")

@@ -11,14 +11,13 @@ using System.Runtime.InteropServices;
 using BirdieDotnetAPI.Helpers;
 using Microsoft.EntityFrameworkCore;
 using BirdieDotnetAPI.Data;
-
-
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace BirdieDotnetAPI.Controllers
 {
-
     [ApiController]
-    //[Authorize] //? (3) jwt debug
+    [Authorize] //? (3) jwt debug
     [Route("api/[controller]")]
     public sealed class UserController : ControllerBase
     {
@@ -94,9 +93,21 @@ namespace BirdieDotnetAPI.Controllers
                 return Unauthorized("Invalid username or password"); //? HTTP 401
             }
 
+            string userToken = UserHelper.GenerateJwtToken(user, _configuration);
+
+            Response.Cookies.Append("X-Access-Token",userToken,new CookieOptions() {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict
+            });
+
+            /*  HttpContext.Response.Cookies.Append(value: new CookieOptions{
+                HttpOnly = true,
+
+            }); */
+
             
 
-            return Ok(UserHelper.GenerateJwtToken(user, _configuration));
+            return Ok();
         }
     }
 }

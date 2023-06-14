@@ -13,7 +13,7 @@ namespace BirdieDotnetAPI.Helpers
     public static class UserHelper
     {
 
-        public static object GenerateJwtToken(User user, IConfiguration appConfiguration)
+        public static string GenerateJwtToken(User user, IConfiguration appConfiguration)
         {
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -34,7 +34,7 @@ namespace BirdieDotnetAPI.Helpers
 
             var tokenString = tokenHandler.WriteToken(token);
 
-            return new { Token = tokenString };
+            return tokenString;
         }
     }
 }

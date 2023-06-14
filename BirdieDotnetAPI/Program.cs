@@ -3,6 +3,7 @@ using BirdieDotnetAPI.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -16,21 +17,8 @@ builder.Services.AddDbContext<TestContext>( optionsAction: options => {
     options.UseMySql(connectionString, ServerVersion.Parse("10.4.28-mariadb"));
 });
 
-
-//TODO Configure Identity properly
-/* builder.Services.AddIdentity<User,IdentityRole>()
-    .AddEntityFrameworkStores<TestContext>()
-    .AddDefaultTokenProviders(); */
-
-//builder.Services.AddIdentity<>
-//builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<TestContext>();
-
-
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-
-
 builder.Services.AddSignalR();
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
@@ -41,6 +29,11 @@ builder.Services.AddCors(options =>
                 .WithMethods("GET", "POST")
                 .AllowCredentials();
         });
+});
+
+
+builder.WebHost.UseKestrel(options => {
+    options.AddServerHeader = false;
 });
 
 
@@ -58,6 +51,15 @@ builder.Services.AddAuthentication(x => {
         ValidAudience = builder.Configuration["Jwt:Audience"], //dev: localhost
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
+    /* options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context => 
+        {
+            context.Token = context.Request.Cookies["SESSIONID"];
+            return Task.CompletedTask;
+        }
+    }; */
+
 });
 
 builder.Services.AddAuthorization();
