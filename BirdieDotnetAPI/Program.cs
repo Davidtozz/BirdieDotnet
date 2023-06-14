@@ -61,7 +61,7 @@ builder.Services.AddAuthentication(x => {
 });
 
 
-builder.Services.AddAuthorization();
+/* builder.Services.AddAuthorization();
 
 builder.Services.Configure<AuthorizationOptions>(options => {
     options.DefaultPolicy = new AuthorizationPolicyBuilder()
@@ -69,7 +69,7 @@ builder.Services.Configure<AuthorizationOptions>(options => {
     .Build();
 });
 
-
+ */
 
 builder.Services.AddControllers();
 
@@ -82,13 +82,11 @@ app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
+/* app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<ChatHub>("/chathub").RequireAuthorization(); 
-});
-
+}); */
 app.MapControllers(); //? UserController
+app.MapHub<ChatHub>("/chathub");
 
 app.Run(); 
-
-

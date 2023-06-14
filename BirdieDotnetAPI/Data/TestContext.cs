@@ -97,7 +97,7 @@ public partial class TestContext : DbContext //TODO Implement Identity IdentityD
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("timestamp")
                 .HasColumnName("created_at");
-            entity.Property(e => e.Message1)
+            entity.Property(e => e.Content)
                 .HasColumnType("text")
                 .HasColumnName("message");
             entity.Property(e => e.SenderId)

@@ -4,21 +4,22 @@ using System.Threading.Tasks;
 
 namespace BirdieDotnetAPI.Hubs
 {
+    
+
     public class ChatHub : Hub
     {
-        //TODO Add ASP.NET Identity for 1-to-1 conversations
+        //TODO Add support for 1-to-1 conversations
 
         //! TEST ATTRIBUTE
         public static uint ConnectedClients = 0;
-
-        #region EventDispatchers
-
-        
-        public async Task SendMessage(string message, User fromUser)
+        private Dictionary<string,dynamic> UserMapping = new();
+        #region EventDispatchers        
+        public async Task SendMessage(string message)
         {
             string connectionId = Context.ConnectionId;
 
-            await Clients.All.SendAsync("ReceiveMessage", connectionId , message, fromUser);
+            //? Trigger onReceiveMessage client-side
+            await Clients.All.SendAsync("ReceiveMessage", connectionId, message);
         }
 
         #endregion 
@@ -27,6 +28,8 @@ namespace BirdieDotnetAPI.Hubs
 
         public override async Task OnConnectedAsync()
         {
+            //TODO extract JWT from headers to identify user
+
             string connectionId = Context.ConnectionId;
             ConnectedClients++;
             Console.WriteLine($"Client ({connectionId}) connected. Current clients: {ConnectedClients}");

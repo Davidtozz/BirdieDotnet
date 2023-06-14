@@ -20,9 +20,12 @@ function ContactsView (props) {
                 const response = await fetch(url, {method: 'GET', 
                 signal: abortController.signal});
                 const json = await response.json();
-                setContacts(json)
+
+                console.log(json)
+
+                await setContacts(json)
             } catch (error) {
-                //console.log("error",error);
+                console.log("error",error);
             }
         }
 
@@ -34,6 +37,7 @@ function ContactsView (props) {
 
 
     const selectedContact = (contact) => {
+        
         props.onContactSelect(contact);
     };
 
@@ -45,8 +49,8 @@ function ContactsView (props) {
             {
                 contacts.map((contact, index) => 
                     <Contact 
-                    onClick={() => selectedContact(contact.Name)}
-                    contactName={contact["Name"]} 
+                    onClick={() => selectedContact(contact["Username"])}
+                    contactName={contact["Username"]} 
                     header={false} 
                     key={index}
                     picUrl={`https://source.unsplash.com/random/500x500/?profile$${index}`}/>

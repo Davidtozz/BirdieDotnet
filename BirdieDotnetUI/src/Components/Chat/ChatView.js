@@ -7,7 +7,7 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 const hubConnection = new HubConnectionBuilder()
   .withUrl("http://localhost:5069/chathub")
-  .configureLogging(LogLevel.Information)
+  .configureLogging(LogLevel.Debug)
   .withAutomaticReconnect()
   .build();
 
@@ -17,32 +17,32 @@ function ChatView(props) {
 
   useEffect(() => {
 
+    const startConnection = async () => {
     if(hubConnection.state !== "Connected" ) {
-      hubConnection.start()
+      await hubConnection.start()
       .then(() => {
-        registerHandlers();
+        hubConnection.on("ReceiveMessage", onReceiveMessage)      
       })
-    }
+    }}
     
+    startConnection();
+
     return () => hubConnection.stop();
   },[]);
 
-  const registerHandlers = () => {
-     //? Handler for SendMessage() server-side method 
-     hubConnection.on("ReceiveMessage", onReceiveMessage)
-  }
 
 
-  const onReceiveMessage = (id, msg, user) => {
+  const onReceiveMessage = (connectionId, message, user) => {
 
     const incomingMessage = {
-        text: msg,
-        incoming: true
+        text: message,
+        incoming: true,
+        fromUser: user.Username
     }
     
-    if(hubConnection.connectionId !== id) {
+    if(hubConnection.connectionId !== connectionId) {
         setMessages(prevMessages => [...prevMessages, incomingMessage])
-        console.log(`Received: ${msg} \nfrom: ${user.name}`)
+        console.log(`Received: ${message} \nfrom: ${user.name}`)
     }
 
 }
@@ -50,12 +50,14 @@ function ChatView(props) {
   //? Trigger SendMessage server-side method 
   const sendMessage = async (e) => {
       if (e.key === 'Enter') {
-        
+        debugger;
         //! DEBUG
-        console.log(e.target.value);
-
-        await hubConnection.invoke("SendMessage", e.target.value, {name: "Jovanotti"});
-      
+        
+        let message = e.target.value
+        
+        /* {Content: e.target.value, SenderId:76} */
+        await hubConnection.invoke("SendMessage", message);
+        
         const outgoingMessage = { //TODO manage logged user 
             text: e.target.value,
             incoming: false

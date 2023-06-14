@@ -10,11 +10,12 @@ import { useState } from 'react';
 function App() {
 
 	/* const queryClient = new QueryClient(); */
-	const [selectedContact, setSelectedContact] = useState(null);
+	const [selectedContact, setSelectedContact] = useState('');
 
 	const handleSelectedContact = (contact) => {
-		console.table(contact)
+		
 		setSelectedContact(contact);
+		console.log(contact)
 	}
 
   return (
