@@ -18,7 +18,7 @@ namespace BirdieDotnetAPI.Controllers
 {
 
     [ApiController]
-    //[Authorize] //! toggle to reset JWT auth
+    //[Authorize] //? (3) jwt debug
     [Route("api/[controller]")]
     public sealed class UserController : ControllerBase
     {

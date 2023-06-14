@@ -14,6 +14,7 @@ namespace BirdieDotnetAPI.Hubs
         public static uint ConnectedClients = 0;
         private Dictionary<string,dynamic> UserMapping = new();
         #region EventDispatchers        
+       
         public async Task SendMessage(string message)
         {
             string connectionId = Context.ConnectionId;
@@ -29,7 +30,6 @@ namespace BirdieDotnetAPI.Hubs
         public override async Task OnConnectedAsync()
         {
             //TODO extract JWT from headers to identify user
-
             string connectionId = Context.ConnectionId;
             ConnectedClients++;
             Console.WriteLine($"Client ({connectionId}) connected. Current clients: {ConnectedClients}");
@@ -40,7 +40,6 @@ namespace BirdieDotnetAPI.Hubs
         #nullable disable 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-
             string connectionId = Context.ConnectionId;
             ConnectedClients--;
             Console.WriteLine($"Client ({connectionId}) disconnected. Clients: {ConnectedClients}");

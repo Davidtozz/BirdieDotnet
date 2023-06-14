@@ -1,5 +1,5 @@
 
-
+//TODO Use service instead of ChatView's logic
 
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 

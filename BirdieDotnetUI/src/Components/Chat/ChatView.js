@@ -1,3 +1,4 @@
+import "../../styles/Components/ChatView.css"
 import MessageBubble from "./MessageBubble";
 import Contact from "../Contacts/Contact";
 import { useEffect, useState } from 'react'; 
@@ -30,8 +31,6 @@ function ChatView(props) {
     return () => hubConnection.stop();
   },[]);
 
-
-
   const onReceiveMessage = (connectionId, message, user) => {
 
     const incomingMessage = {
@@ -42,7 +41,7 @@ function ChatView(props) {
     
     if(hubConnection.connectionId !== connectionId) {
         setMessages(prevMessages => [...prevMessages, incomingMessage])
-        console.log(`Received: ${message} \nfrom: ${user.name}`)
+        console.log(`Received: ${message} \nfrom: ${user.Userame}`)
     }
 
 }
@@ -50,11 +49,10 @@ function ChatView(props) {
   //? Trigger SendMessage server-side method 
   const sendMessage = async (e) => {
       if (e.key === 'Enter') {
-        debugger;
         //! DEBUG
         
         let message = e.target.value
-        
+
         /* {Content: e.target.value, SenderId:76} */
         await hubConnection.invoke("SendMessage", message);
         
@@ -87,7 +85,7 @@ function ChatView(props) {
             })
           }
         </div>
-        <footer>
+        <footer className="chat-footer-wrapper">
           <input 
             onKeyDown={sendMessage} // send message if Enter was pressed
             type="text" 

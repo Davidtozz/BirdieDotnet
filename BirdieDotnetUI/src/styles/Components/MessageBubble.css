@@ -1,0 +1,71 @@
+
+.message-list {
+	display: flex;
+	flex-direction: column;
+  justify-content: flex-end;
+	gap: .2rem;
+  flex: 1;
+	padding: 1rem;
+  overflow: scroll;
+  scroll-behavior: smooth;
+	background-color: var(--chat-bg-color);
+}
+
+/* Message tail */
+.triangle {
+	width: 0;
+	height: 0;
+	border-top: 15px solid transparent;
+	border-bottom: 15px solid transparent;
+	position: relative;
+	top: 0.6rem;
+	border-left: 20px solid white;
+  
+	rotate: 180deg;
+}
+
+/* Message tail of others' message */
+.triangle.reversed {
+	width: 0;
+	height: 0;
+	border-top: 15px solid transparent;
+	border-bottom: 15px solid transparent;
+	position: relative;
+	top: 0.6rem;
+	border-left: 20px solid #BB98FF;
+	rotate: 0deg;
+	
+}
+
+.message-bubble-wrapper {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+
+	height: fit-content;
+}
+
+.message-bubble-wrapper.reversed {
+	flex-direction: row-reverse;
+}
+
+
+.message-bubble {
+	width: fit-content;
+	display: flex;
+	align-items: center;
+	max-width: 15rem;
+	padding: 0 0.5rem;
+	min-height: 50px;
+	height: fit-content;
+	background-color: white;
+	border-radius: 10px;
+  /* outline: 1px solid red; */ /* TODO add a slight outline to bubble and triangle */
+	font-family: "Roboto", sans-serif;
+  
+}
+
+.message-bubble.reversed {
+	background-color: #BB98FF;
+  color: white;
+}

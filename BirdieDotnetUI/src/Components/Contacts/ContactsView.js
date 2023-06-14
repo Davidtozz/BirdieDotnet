@@ -1,5 +1,6 @@
 import Contact from './Contact';
 import { useState, useEffect } from 'react'
+import "../../styles/Components/ContactsView.css"
 /* import JohnDoe from '../img5 1.png';
  */
 function ContactsView (props) {

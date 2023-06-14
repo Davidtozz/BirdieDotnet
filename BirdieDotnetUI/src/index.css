@@ -1,3 +1,16 @@
+@import "./styles/Components/imports.css";
+
+:root{
+  --block-bg-color: #FFFEFF;
+  --container-stroke: rgba(0,0,0,0.2);
+  --icon-background-color: #f1f1f1;
+  --birdie-purple: #8C52FF;
+  --birdie-light-purple: #BB98FF;
+  --contact-card-bg: #FCFCFC;
+  --contact-card-bg-hover: rgb(243, 243, 243);
+  --chat-bg-color: #F4F4F4;
+}
+
 * {
   margin: 0;
   padding: 0;

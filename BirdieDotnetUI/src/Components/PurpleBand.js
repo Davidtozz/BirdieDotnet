@@ -1,3 +1,5 @@
+import "../styles/Components/PurpleBand.css"
+
 const PurpeBand = () => {
     return <>
         <div className='purple-band-wrapper'>

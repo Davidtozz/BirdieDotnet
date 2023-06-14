@@ -60,33 +60,29 @@ builder.Services.AddAuthentication(x => {
     };
 });
 
+builder.Services.AddAuthorization();
 
-/* builder.Services.AddAuthorization();
+//? jwt debug
 
-builder.Services.Configure<AuthorizationOptions>(options => {
+/* builder.Services.Configure<AuthorizationOptions>(options => {
     options.DefaultPolicy = new AuthorizationPolicyBuilder()
     .RequireAuthenticatedUser()
     .Build();
-});
-
- */
+}); */
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
 
-/* app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<ChatHub>("/chathub").RequireAuthorization(); 
-}); */
-app.MapControllers(); //? UserController
-app.MapHub<ChatHub>("/chathub");
+app.UseEndpoints(endpoints =>
+{                                       //? (2) jwt debug
+    endpoints.MapHub<ChatHub>("/chathub")/* .RequireAuthorization() */; 
+});
 
+app.MapControllers(); //? UserController
 app.Run(); 

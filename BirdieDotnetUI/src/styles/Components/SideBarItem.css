@@ -1,0 +1,30 @@
+.sidebar-item-container{
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    background-color: var(--block-bg-color);
+    height: 50px;
+    width: 50px;
+    border-radius: 5px;
+    cursor: pointer;
+  
+    position: relative;
+  
+  }
+  
+  .sidebar-item-container::after{
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 2.5px; 
+    transform: translateY(-50%);
+    height: 1.8rem;
+    width: 2px;
+    border-radius: 2px;
+    background-color: transparent; 
+    transition: background-color 0.3s; 
+  }
+  
+  .sidebar-item-container:hover::after {
+    background-color: var(--birdie-purple); /* Change the line color on hover */
+  } 

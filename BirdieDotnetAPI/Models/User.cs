@@ -7,6 +7,8 @@ namespace BirdieDotnetAPI.Models;
 
 //TODO Migrate to Identity User 
 
+#pragma warning disable 8618
+
 public class User  /* IdentityUser<int> */
 {
     [Key]

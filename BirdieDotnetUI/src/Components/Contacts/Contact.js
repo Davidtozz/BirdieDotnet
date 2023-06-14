@@ -1,4 +1,6 @@
 import {ReactComponent as Pinned} from '../../static/svg/Contact/pinned.svg';
+import "../../styles/Components/Contact.css"
+
 // {picurl: url, contactname: name, header: isHeader}
 const Contact = (props) => {
 

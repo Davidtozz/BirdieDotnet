@@ -1,0 +1,27 @@
+.list-view{  
+    background-color: var(--block-bg-color);
+    border-right: 1px solid var(--container-stroke);
+    flex: 3;
+    overflow: scroll; 
+    border-top-left-radius: 15px; 
+  }
+
+  .search-card {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    background-color: var(--block-bg-color);
+    
+  }
+
+  .search-field:focus {
+    outline: none;
+    border-color: var(--birdie-light-purple);
+  }
+  
+  .search-field > * {
+    color: rgba(0, 0, 0, 0.2);
+    text-indent: 10px;
+  }

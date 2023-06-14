@@ -5,11 +5,10 @@ import ChatView from "./Components/Chat/ChatView.js";
 import PurpleBand from "./Components/PurpleBand.js";
 import './App.css';
 import { useState } from 'react';
-/* import { QueryClient } from '@tanstack/react-query' */
 
 function App() {
 
-	/* const queryClient = new QueryClient(); */
+
 	const [selectedContact, setSelectedContact] = useState('');
 
 	const handleSelectedContact = (contact) => {
@@ -20,10 +19,11 @@ function App() {
 
   return (
     <>
+	{/* TODO Wrap elements inside a ChatInterface Page */}
       	<SideBar />
       	<main>
 			<PurpleBand />
-			<div className='content-wrapper'>
+			<div className='chat-interface'>
 				<ContactsView onContactSelect={handleSelectedContact} />
 				<ChatView selectedContact={selectedContact} />
 			</div>
