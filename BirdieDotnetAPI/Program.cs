@@ -2,6 +2,7 @@ using BirdieDotnetAPI.Data;
 using BirdieDotnetAPI.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -18,21 +19,19 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(
-        builder =>
-        {
-            builder.WithOrigins("https://localhost:5069")
-                .AllowAnyHeader()
-                .WithMethods("GET", "POST")
-                .AllowCredentials();
-        });
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("https://localhost:5069")
+            .AllowAnyHeader()
+            .WithMethods("GET", "POST")
+            .AllowCredentials();
+    });
 });
 
 //? Remove Server response header
 builder.WebHost.UseKestrel(options => {
     options.AddServerHeader = false;
 });
-
 
 //TODO encrypt JWT tokens
 builder.Services.AddAuthentication(x => {
@@ -47,24 +46,31 @@ builder.Services.AddAuthentication(x => {
         ValidateIssuerSigningKey = true, 
         ValidIssuer = builder.Configuration["Jwt:Issuer"], //dev: localhost
         ValidAudience = builder.Configuration["Jwt:Audience"], //dev: localhost
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+        ClockSkew = TimeSpan.Zero
     };
+
+    options.RefreshInterval = TimeSpan.FromSeconds(30);
 
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
         {
-
             if (context.Request.Cookies.ContainsKey("X-Access-Token"))
             {
                 context.Token = context.Request.Cookies["X-Access-Token"];
             }
-
+            
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context => {
+            if(context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+            {
+                context.Response.Headers.Add("Token-Expired", "true");
+            }
             return Task.CompletedTask;
         }
     };
-
-
 });
 
 builder.Services.AddAuthorization();

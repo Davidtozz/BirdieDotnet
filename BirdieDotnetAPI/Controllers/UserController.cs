@@ -8,16 +8,19 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Runtime.InteropServices;
-using BirdieDotnetAPI.Helpers;
+//TODO BirdieDotnetAPI.Helpers
 using Microsoft.EntityFrameworkCore;
 using BirdieDotnetAPI.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Cryptography;
+using System.Diagnostics;
+using System.Security;
 
 namespace BirdieDotnetAPI.Controllers
 {
     [ApiController]
-    [Authorize] //? (3) jwt debug
+    [Authorize] 
     [Route("api/[controller]")]
     public sealed class UserController : ControllerBase
     {
@@ -34,6 +37,7 @@ namespace BirdieDotnetAPI.Controllers
 
         //TODO Configure Authorize attributes 
         [HttpGet] //? /api/user
+        
         public IActionResult GetAllUsers()
         {
             Console.WriteLine(HttpContext.Request.Headers.Authorization);
@@ -79,7 +83,7 @@ namespace BirdieDotnetAPI.Controllers
                 await _context.SaveChangesAsync();
             }
             
-            return Ok(UserHelper.GenerateJwtToken(user, _configuration));
+            return Ok(GenerateJwtToken(user));
         }
 
         [AllowAnonymous]
@@ -93,21 +97,69 @@ namespace BirdieDotnetAPI.Controllers
                 return Unauthorized("Invalid username or password"); //? HTTP 401
             }
 
-            string userToken = UserHelper.GenerateJwtToken(user, _configuration);
+            string jwtToken = GenerateJwtToken(user);
+            string refreshToken = GenerateRefreshToken();
 
-            Response.Cookies.Append("X-Access-Token",userToken,new CookieOptions() {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict
-            });
+            Response.Cookies.Append("X-Access-Token", jwtToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
+            Response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
 
-            /*  HttpContext.Response.Cookies.Append(value: new CookieOptions{
-                HttpOnly = true,
-
-            }); */
-
-            
 
             return Ok();
         }
+
+
+        //TODO Move JWT logic in separate controller
+
+        [HttpPost("/refresh")]
+        public IActionResult RefreshToken([FromBody] User user) 
+        {
+            if(Request.Cookies["X-Refresh-Token"].IsNullOrEmpty()) {
+                return Unauthorized("Refresh token not found.");
+            }
+
+            Response.Cookies.Append("X-Access-Token", GenerateJwtToken(user), new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
+            Response.Cookies.Append("X-Refresh-Token", GenerateRefreshToken(), new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});                
+            return Ok();
+        }
+
+        #region UtilityMethods
+       
+        private string GenerateJwtToken(User user)
+        {
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            
+            //? 256 bit key
+            byte[] key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, user.Username)
+                }),
+                Expires = DateTime.UtcNow.AddSeconds(30), // expiration date
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return tokenString;
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+            }
+
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        #endregion
+
     }
 }
