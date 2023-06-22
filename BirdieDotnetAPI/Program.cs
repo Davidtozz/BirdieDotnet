@@ -10,9 +10,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-//! Replacing in favor of EntityFramework Core
-/* builder.Services.AddSingleton(new MySqlConnection(connectionString)); */
-
 builder.Services.AddDbContext<TestContext>( optionsAction: options => {
     options.UseMySql(connectionString, ServerVersion.Parse("10.4.28-mariadb"));
 });
@@ -31,7 +28,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-
+//? Remove Server response header
 builder.WebHost.UseKestrel(options => {
     options.AddServerHeader = false;
 });
@@ -42,6 +39,7 @@ builder.Services.AddAuthentication(x => {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options => {
+    
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = false, //TODO validate issuer in production
@@ -51,40 +49,34 @@ builder.Services.AddAuthentication(x => {
         ValidAudience = builder.Configuration["Jwt:Audience"], //dev: localhost
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
-    /* options.Events = new JwtBearerEvents
+
+    options.Events = new JwtBearerEvents
     {
-        OnMessageReceived = context => 
+        OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["SESSIONID"];
+
+            if (context.Request.Cookies.ContainsKey("X-Access-Token"))
+            {
+                context.Token = context.Request.Cookies["X-Access-Token"];
+            }
+
             return Task.CompletedTask;
         }
-    }; */
+    };
+
 
 });
 
 builder.Services.AddAuthorization();
-
-//? jwt debug
-
-/* builder.Services.Configure<AuthorizationOptions>(options => {
-    options.DefaultPolicy = new AuthorizationPolicyBuilder()
-    .RequireAuthenticatedUser()
-    .Build();
-}); */
-
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseRouting();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{                                       //? (2) jwt debug
-    endpoints.MapHub<ChatHub>("/chathub")/* .RequireAuthorization() */; 
-});
+app.MapHub<ChatHub>("/chathub").RequireAuthorization();
 
-app.MapControllers(); //? UserController
+app.MapControllers(); 
 app.Run(); 

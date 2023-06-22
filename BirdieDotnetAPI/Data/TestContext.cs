@@ -15,7 +15,8 @@ namespace BirdieDotnetAPI.Data;
 #nullable disable
 
 //? 'Test' refers to the current database name.
-public partial class TestContext : DbContext //TODO Implement Identity IdentityDbContext<User, IdentityRole<int>, int>
+//TODO migrate database to a more structured schema
+public partial class TestContext : DbContext 
 {
     public TestContext()
     {

@@ -26,6 +26,7 @@ function App() {
 			<div className='chat-interface'>
 				<ContactsView onContactSelect={handleSelectedContact} />
 				<ChatView selectedContact={selectedContact} />
+				
 			</div>
 		</main>
     </>

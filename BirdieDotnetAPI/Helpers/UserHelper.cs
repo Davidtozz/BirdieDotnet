@@ -17,7 +17,7 @@ namespace BirdieDotnetAPI.Helpers
         {
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            byte[] key = new byte[32];
+            byte[] key = new byte[256];
             key = Encoding.ASCII.GetBytes(appConfiguration["Jwt:Key"]!);
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -25,6 +25,7 @@ namespace BirdieDotnetAPI.Helpers
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Name, user.Username),
+                    
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(30), // expiration date
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
