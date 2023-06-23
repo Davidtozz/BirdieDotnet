@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Cryptography;
 using System.Diagnostics;
 using System.Security;
+using BirdieDotnetAPI.Services;
 
 namespace BirdieDotnetAPI.Controllers
 {
@@ -25,14 +26,17 @@ namespace BirdieDotnetAPI.Controllers
     public sealed class UserController : ControllerBase
     {
 
+        //? ef db instance
         private readonly TestContext _context;
         private readonly IConfiguration _configuration; //? Used for signing JWT 
+        private readonly TokenService _tokenService;
         
 
-        public UserController(TestContext context, IConfiguration configuration) 
+        public UserController(TestContext context, IConfiguration configuration, TokenService tokenService) 
         {
             _context = context;
             _configuration = configuration;
+            _tokenService = tokenService;
         }
 
         //TODO Configure Authorize attributes 
@@ -83,7 +87,7 @@ namespace BirdieDotnetAPI.Controllers
                 await _context.SaveChangesAsync();
             }
             
-            return Ok(GenerateJwtToken(user));
+            return Ok(_tokenService.GenerateJwtToken(user.Username));
         }
 
         [AllowAnonymous]
@@ -97,11 +101,16 @@ namespace BirdieDotnetAPI.Controllers
                 return Unauthorized("Invalid username or password"); //? HTTP 401
             }
 
-            string jwtToken = GenerateJwtToken(user);
-            string refreshToken = GenerateRefreshToken();
+            string jwtToken = _tokenService.GenerateJwtToken(user.Username, role: "User");
+            string refreshToken = _tokenService.GenerateRefreshToken();
 
             Response.Cookies.Append("X-Access-Token", jwtToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
-            Response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
+            Response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions() { 
+                HttpOnly = true, 
+                SameSite = SameSiteMode.Strict, 
+                Path = "/api/user/refresh", 
+                Expires = DateTime.UtcNow.AddMonths(6) 
+            });
 
 
             return Ok();
@@ -110,56 +119,22 @@ namespace BirdieDotnetAPI.Controllers
 
         //TODO Move JWT logic in separate controller
 
-        [HttpPost("/refresh")]
-        public IActionResult RefreshToken([FromBody] User user) 
+        [Authorize(Policy = "RefreshToken")] //TODO configure custom policy, allowing those with expired JWT and valid RefreshToken to submit a request here
+        [HttpPost("refresh")]
+        public IActionResult RefreshToken() //! Only the refresh token should be sent here 
         {
-            if(Request.Cookies["X-Refresh-Token"].IsNullOrEmpty()) {
-                return Unauthorized("Refresh token not found.");
-            }
+            //? debug
+            Console.WriteLine($"Received {HttpContext.Request.Method} at /refresh");
 
-            Response.Cookies.Append("X-Access-Token", GenerateJwtToken(user), new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
-            Response.Cookies.Append("X-Refresh-Token", GenerateRefreshToken(), new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});                
+
+            //check if token is expired
+            /* if(token.ValidTo > DateTime.UtcNow) {
+                return Unauthorized(new {Error = "Token is not expired."});
+            } */
+
+            Response.Cookies.Append("X-Access-Token", _tokenService.GenerateJwtToken("DEBUGGAMI", role: "User"), new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
+            Response.Cookies.Append("X-Refresh-Token", _tokenService.GenerateRefreshToken(), new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Path = "/api/user/refresh"});                
             return Ok();
         }
-
-        #region UtilityMethods
-       
-        private string GenerateJwtToken(User user)
-        {
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            
-            //? 256 bit key
-            byte[] key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Username)
-                }),
-                Expires = DateTime.UtcNow.AddSeconds(30), // expiration date
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
-            return tokenString;
-        }
-
-        private string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-            }
-
-            return Convert.ToBase64String(randomNumber);
-        }
-
-        #endregion
-
     }
 }

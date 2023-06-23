@@ -1,11 +1,15 @@
 using BirdieDotnetAPI.Data;
 using BirdieDotnetAPI.Hubs;
+using BirdieDotnetAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder();
@@ -16,6 +20,7 @@ builder.Services.AddDbContext<TestContext>( optionsAction: options => {
 });
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddScoped<TokenService>();
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
@@ -33,6 +38,15 @@ builder.WebHost.UseKestrel(options => {
     options.AddServerHeader = false;
 });
 
+
+
+
+/* builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
+    options.Password.RequiredLength = 12;
+    options.Password.RequireDigit = true;
+    options.SignIn.RequireConfirmedEmail = true;
+}).AddEntityFrameworkStores<TestContext>(); */
+
 //TODO encrypt JWT tokens
 builder.Services.AddAuthentication(x => {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -41,16 +55,14 @@ builder.Services.AddAuthentication(x => {
     
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false, //TODO validate issuer in production
-        ValidateAudience = false, //TODO validate audience in production
+        ValidateIssuer = false, //! has to be true in production
+        ValidateAudience = false, //! has to be true in production
         ValidateIssuerSigningKey = true, 
         ValidIssuer = builder.Configuration["Jwt:Issuer"], //dev: localhost
         ValidAudience = builder.Configuration["Jwt:Audience"], //dev: localhost
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
         ClockSkew = TimeSpan.Zero
     };
-
-    options.RefreshInterval = TimeSpan.FromSeconds(30);
 
     options.Events = new JwtBearerEvents
     {
@@ -73,7 +85,16 @@ builder.Services.AddAuthentication(x => {
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("RefreshToken", policy => {
+        policy.RequireAssertion(context => {
+            var httpContext = context.Resource as HttpContext;
+        
+            return httpContext!.Request.Cookies.ContainsKey("X-Refresh-Token");
+        }); 
+    });
+
+});
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -81,8 +102,6 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapHub<ChatHub>("/chathub").RequireAuthorization();
-
 app.MapControllers(); 
 app.Run(); 
