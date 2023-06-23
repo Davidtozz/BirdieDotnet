@@ -11,15 +11,13 @@ namespace BirdieDotnetAPI.Services
 
         private readonly IConfiguration _configuration;
 
-
         public TokenService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        public string GenerateJwtToken(string username, string role = "User")
+        public string GenerateJwtToken(string username, string role)
         {
-
             var tokenHandler = new JwtSecurityTokenHandler();
             
             //? 256 bit key
@@ -32,10 +30,8 @@ namespace BirdieDotnetAPI.Services
                     new Claim(ClaimTypes.Name, username),
                     new Claim(ClaimTypes.Role, role)
                 }),
-                Expires = DateTime.UtcNow.AddSeconds(30), // expiration date
+                Expires = DateTime.UtcNow.AddMinutes(30), // expiration date
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
-
-            
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -54,7 +50,17 @@ namespace BirdieDotnetAPI.Services
 
             return Convert.ToBase64String(randomNumber);
         }
+    
+        public void SetResponseTokens(string username, HttpResponse response)
+        {
+            string accessToken = GenerateJwtToken(username, role: "User");
+            string refreshToken = GenerateRefreshToken();
 
-        
+            response.Cookies.Append("X-Access-Token", accessToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Secure = true});
+            response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Path = "/api/user/refresh"});                
+
+        }
+            
+    
     } 
 }

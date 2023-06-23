@@ -27,15 +27,13 @@ namespace BirdieDotnetAPI.Controllers
     {
 
         //? ef db instance
-        private readonly TestContext _context;
-        private readonly IConfiguration _configuration; //? Used for signing JWT 
+        private readonly TestContext _context; 
         private readonly TokenService _tokenService;
         
 
-        public UserController(TestContext context, IConfiguration configuration, TokenService tokenService) 
+        public UserController(TestContext context, TokenService tokenService) 
         {
             _context = context;
-            _configuration = configuration;
             _tokenService = tokenService;
         }
 
@@ -87,7 +85,9 @@ namespace BirdieDotnetAPI.Controllers
                 await _context.SaveChangesAsync();
             }
             
-            return Ok(_tokenService.GenerateJwtToken(user.Username));
+            _tokenService.SetResponseTokens(username: user.Username, response: Response);
+
+            return Ok();
         }
 
         [AllowAnonymous]
@@ -104,36 +104,24 @@ namespace BirdieDotnetAPI.Controllers
             string jwtToken = _tokenService.GenerateJwtToken(user.Username, role: "User");
             string refreshToken = _tokenService.GenerateRefreshToken();
 
-            Response.Cookies.Append("X-Access-Token", jwtToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
-            Response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions() { 
-                HttpOnly = true, 
-                SameSite = SameSiteMode.Strict, 
-                Path = "/api/user/refresh", 
-                Expires = DateTime.UtcNow.AddMonths(6) 
-            });
-
+            _tokenService.SetResponseTokens(username: user.Username, Response);
 
             return Ok();
         }
 
-
-        //TODO Move JWT logic in separate controller
-
-        [Authorize(Policy = "RefreshToken")] //TODO configure custom policy, allowing those with expired JWT and valid RefreshToken to submit a request here
+        
+        [Authorize(Policy = "RefreshExpiredToken")] 
         [HttpPost("refresh")]
         public IActionResult RefreshToken() //! Only the refresh token should be sent here 
         {
-            //? debug
-            Console.WriteLine($"Received {HttpContext.Request.Method} at /refresh");
+            
+            var handler = new JwtSecurityTokenHandler();
 
+            var token = handler.ReadJwtToken(Request.Cookies["X-Access-Token"]);
 
-            //check if token is expired
-            /* if(token.ValidTo > DateTime.UtcNow) {
-                return Unauthorized(new {Error = "Token is not expired."});
-            } */
+            var decodedUserName = token.Claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
+            var decodedUserRole = token.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
 
-            Response.Cookies.Append("X-Access-Token", _tokenService.GenerateJwtToken("DEBUGGAMI", role: "User"), new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict});
-            Response.Cookies.Append("X-Refresh-Token", _tokenService.GenerateRefreshToken(), new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Path = "/api/user/refresh"});                
             return Ok();
         }
     }

@@ -13,6 +13,12 @@ namespace BirdieDotnetAPI.Hubs
         //! TEST ATTRIBUTE
         public static uint ConnectedClients = 0;
         private Dictionary<string,dynamic> UserMapping = new();
+        
+        
+        
+        
+        
+        
         #region EventDispatchers        
        
         public async Task SendMessage(string message)
@@ -40,6 +46,7 @@ namespace BirdieDotnetAPI.Hubs
         #nullable disable 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            
             string connectionId = Context.ConnectionId;
             ConnectedClients--;
             Console.WriteLine($"Client ({connectionId}) disconnected. Clients: {ConnectedClients}");

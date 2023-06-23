@@ -35,6 +35,8 @@ public partial class TestContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<Token> Tokens {get; set;}
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 {
     if (!optionsBuilder.IsConfigured)
@@ -155,7 +157,7 @@ public partial class TestContext : DbContext
             entity.ToTable("users");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnType("int(11)")
                 .HasColumnName("id");
             entity.Property(e => e.CreatedAt)

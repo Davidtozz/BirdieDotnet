@@ -38,9 +38,6 @@ builder.WebHost.UseKestrel(options => {
     options.AddServerHeader = false;
 });
 
-
-
-
 /* builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
     options.Password.RequiredLength = 12;
     options.Password.RequireDigit = true;
@@ -86,7 +83,7 @@ builder.Services.AddAuthentication(x => {
 });
 
 builder.Services.AddAuthorization(options => {
-    options.AddPolicy("RefreshToken", policy => {
+    options.AddPolicy("RefreshExpiredToken", policy => {
         policy.RequireAssertion(context => {
             var httpContext = context.Resource as HttpContext;
         
