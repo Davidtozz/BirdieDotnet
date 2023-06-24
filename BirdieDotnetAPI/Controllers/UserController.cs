@@ -102,7 +102,7 @@ namespace BirdieDotnetAPI.Controllers
             }
 
             string jwtToken = _tokenService.GenerateJwtToken(user.Username, role: "User");
-            string refreshToken = _tokenService.GenerateRefreshToken();
+            //string refreshToken = _tokenService.GenerateRefreshToken();
 
             _tokenService.SetResponseTokens(username: user.Username, Response);
 
@@ -114,14 +114,19 @@ namespace BirdieDotnetAPI.Controllers
         [HttpPost("refresh")]
         public IActionResult RefreshToken() //! Only the refresh token should be sent here 
         {
+            /* if(!Request.Cookies.ContainsKey("X-Refresh-Token"))
+            {
+                return Unauthorized("No refresh token found");
+            }
+
+
+            _context.Tokens.Add(_tokenService.GenerateRefreshToken());
             
-            var handler = new JwtSecurityTokenHandler();
-
-            var token = handler.ReadJwtToken(Request.Cookies["X-Access-Token"]);
-
-            var decodedUserName = token.Claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
-            var decodedUserRole = token.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
-
+         
+         
+            _tokenService.GenerateRefreshToken(); */
+         
+         
             return Ok();
         }
     }

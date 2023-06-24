@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using BirdieDotnetAPI.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BirdieDotnetAPI.Services
@@ -40,24 +41,23 @@ namespace BirdieDotnetAPI.Services
             return tokenString;
         }
 
-        public string GenerateRefreshToken()
+        public RefreshToken GenerateRefreshToken()
         {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
+            return new RefreshToken 
             {
-                rng.GetBytes(randomNumber);
-            }
-
-            return Convert.ToBase64String(randomNumber);
+                JwtId = Guid.NewGuid().ToString(),
+                ExpirationDate = DateTime.UtcNow.AddDays(7),
+                CreationDate = DateTime.UtcNow
+            };
         }
     
         public void SetResponseTokens(string username, HttpResponse response)
         {
             string accessToken = GenerateJwtToken(username, role: "User");
-            string refreshToken = GenerateRefreshToken();
+            RefreshToken refreshToken = GenerateRefreshToken();
 
             response.Cookies.Append("X-Access-Token", accessToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Secure = true});
-            response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Path = "/api/user/refresh"});                
+            response.Cookies.Append("X-Refresh-Token", refreshToken.JwtId, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Path = "/api/user/refresh"});                
 
         }
             

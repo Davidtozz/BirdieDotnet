@@ -3,6 +3,7 @@ using System;
 using BirdieDotnetAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdieDotnetAPI.Migrations
 {
     [DbContext(typeof(TestContext))]
-    partial class TestContextModelSnapshot : ModelSnapshot
+    [Migration("20230624104409_RefreshTokenModelUpdate")]
+    partial class RefreshTokenModelUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,22 +109,23 @@ namespace BirdieDotnetAPI.Migrations
                     b.ToTable("participants", (string)null);
                 });
 
-            modelBuilder.Entity("BirdieDotnetAPI.Models.RefreshToken", b =>
+            modelBuilder.Entity("BirdieDotnetAPI.Models.Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<DateTime>("ExpirationDate")
+                        .IsRequired()
+                        .HasColumnType("datetime(6)");
+                    
+                    b.Property<DateTime>("CreationDate")
+                        .IsRequired()
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("JwtId")
                         .IsRequired()
-                        .HasMaxLength(36)
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int(11)");
@@ -130,7 +134,7 @@ namespace BirdieDotnetAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tokens", (string)null);
+                    b.ToTable("Tokens");
                 });
 
             modelBuilder.Entity("BirdieDotnetAPI.Models.User", b =>
@@ -208,7 +212,7 @@ namespace BirdieDotnetAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BirdieDotnetAPI.Models.RefreshToken", b =>
+            modelBuilder.Entity("BirdieDotnetAPI.Models.Token", b =>
                 {
                     b.HasOne("BirdieDotnetAPI.Models.User", "User")
                         .WithMany()

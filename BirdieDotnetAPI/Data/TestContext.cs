@@ -16,7 +16,7 @@ namespace BirdieDotnetAPI.Data;
 
 //? 'Test' refers to the current database name.
 //TODO migrate database to a more structured schema
-public partial class TestContext : DbContext 
+public partial class TestContext : DbContext
 {
     public TestContext()
     {
@@ -24,7 +24,7 @@ public partial class TestContext : DbContext
 
     public TestContext(DbContextOptions<TestContext> options) : base(options)
     {
-        
+
     }
 
     public virtual DbSet<Conversation> Conversations { get; set; }
@@ -35,22 +35,22 @@ public partial class TestContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<Token> Tokens {get; set;}
+    public virtual DbSet<RefreshToken> Tokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-{
-    if (!optionsBuilder.IsConfigured)
     {
-        IConfigurationRoot configuration = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json")
-               .Build();
+        if (!optionsBuilder.IsConfigured)
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                   .SetBasePath(Directory.GetCurrentDirectory())
+                   .AddJsonFile("appsettings.json")
+                   .Build();
 
 
-        string connectionString = configuration.GetConnectionString("DefaultConnection");
-        optionsBuilder.UseMySql(connectionString, ServerVersion.Parse("10.4.28-mariadb"));
+            string connectionString = configuration.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseMySql(connectionString, ServerVersion.Parse("10.4.28-mariadb"));
+        }
     }
-}
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -158,6 +158,7 @@ public partial class TestContext : DbContext
 
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd()
+                .UseMySqlIdentityColumn()
                 .HasColumnType("int(11)")
                 .HasColumnName("id");
             entity.Property(e => e.CreatedAt)
@@ -176,10 +177,38 @@ public partial class TestContext : DbContext
                 .HasColumnName("username");
         });
 
-        //OnModelCreatingPartial(modelBuilder);
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("tokens");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()
+                .HasColumnType("int");
+            
+            entity.Property(e => e.JwtId)
+            .IsRequired()
+            .HasColumnType("longtext");
+            
+            entity.Property(e => e.ExpirationDate)
+            .HasColumnType("datetime(6)");
+            
+            entity.Property(e => e.CreationDate).HasColumnType("datetime(6)");
+            entity.Property(e => e.UserId).HasColumnType("int(11)");
+
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+        });
+
+        OnModelCreatingPartial(modelBuilder);
 
         base.OnModelCreating(modelBuilder);
     }
 
-    //partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
