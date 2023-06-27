@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using BirdieDotnetAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using NuGet.Common;
@@ -13,7 +14,7 @@ namespace BirdieDotnetAPI.Models;
 
 public class User  /* IdentityUser<int> */
 {
-
+    [Key, JsonIgnore]
     public int Id { get; set; }
 
     [Required]

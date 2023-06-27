@@ -2,8 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using BirdieDotnetAPI.Models;
 using Microsoft.IdentityModel.Tokens;
+
 
 namespace BirdieDotnetAPI.Services
 {
@@ -17,7 +19,7 @@ namespace BirdieDotnetAPI.Services
             _configuration = configuration;
         }
 
-        public string GenerateJwtToken(string username, string role)
+        public string GenerateJwtToken(User user, string role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             
@@ -28,39 +30,66 @@ namespace BirdieDotnetAPI.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name, username),
-                    new Claim(ClaimTypes.Role, role)
+                    new Claim("id", user.Id.ToString()),
+                    new Claim("username", user.Username),
+                    new Claim("role", role)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30), // expiration date
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
+                Expires = DateTime.UtcNow.AddMinutes(30), //TODO dev only. lower duration in production
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+                /* Issuer = _configuration["Jwt:Issuer"],
+                Audience = _configuration["Jwt:Audience"] */
             };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            string tokenString = tokenHandler.WriteToken(token);
 
             return tokenString;
         }
 
-        public RefreshToken GenerateRefreshToken()
-        {
-            return new RefreshToken 
-            {
-                JwtId = Guid.NewGuid().ToString(),
+        public void SetResponseTokens(User forUser, HttpResponse context, RefreshToken? refreshToken = null,  CookieOptions? accessTokenOptions = null, CookieOptions? refreshTokenOptions = null)
+        {   
+            string accessToken = GenerateJwtToken(forUser, role: "User");
+            refreshToken ??= new RefreshToken() {
+                JwtId = accessToken,
                 ExpirationDate = DateTime.UtcNow.AddDays(7),
-                CreationDate = DateTime.UtcNow
+                CreationDate = DateTime.UtcNow,
+                UserId = forUser.Id
             };
+
+            accessTokenOptions ??= new () {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Secure = true
+            };
+
+            refreshTokenOptions ??= new () {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Path = "/api/user/refresh"
+            };
+
+            string encodedRefreshToken = SerializeRefreshToken(refreshToken);
+
+            context.Cookies.Append("X-Access-Token", accessToken, accessTokenOptions);
+            context.Cookies.Append("X-Refresh-Token", encodedRefreshToken, refreshTokenOptions);                
         }
-    
-        public void SetResponseTokens(string username, HttpResponse response)
+
+        public string SerializeRefreshToken(RefreshToken token)
         {
-            string accessToken = GenerateJwtToken(username, role: "User");
-            RefreshToken refreshToken = GenerateRefreshToken();
+            string serializedRefreshToken = JsonSerializer.Serialize(token);
+            string encodedRefreshToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(serializedRefreshToken));
 
-            response.Cookies.Append("X-Access-Token", accessToken, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Secure = true});
-            response.Cookies.Append("X-Refresh-Token", refreshToken.JwtId, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict, Path = "/api/user/refresh"});                
-
+            return encodedRefreshToken;
         }
-            
-    
+
+        public RefreshToken DeserializeRefreshToken(string encodedRefreshToken, out RefreshToken deserializedRefreshToken)
+        {
+            byte[] decodedRefreshToken = Convert.FromBase64String(encodedRefreshToken);
+            string serializedRefreshToken = Encoding.UTF8.GetString(decodedRefreshToken);
+            RefreshToken refreshToken = JsonSerializer.Deserialize<RefreshToken>(serializedRefreshToken)!;
+
+            return deserializedRefreshToken = refreshToken;
+        }
+
     } 
 }

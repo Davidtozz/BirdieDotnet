@@ -6,13 +6,14 @@ namespace BirdieDotnetAPI.Models
 {
     public class RefreshToken
     {
-        [Key]
-        [JsonIgnore]
+        
+        [Key, JsonIgnore]
         public int Id {get; set;}
         
         [Required]
         public string JwtId {get; set;}
         
+        [JsonIgnore]
         public DateTime ExpirationDate {get; set;}
         
         public DateTime CreationDate {get; set;}
@@ -22,5 +23,6 @@ namespace BirdieDotnetAPI.Models
         
         [JsonIgnore]
         public virtual User User {get; set;} = null!;
+
     }
 }
