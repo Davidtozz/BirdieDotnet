@@ -82,13 +82,13 @@ namespace BirdieDotnetAPI.Services
             return encodedRefreshToken;
         }
 
-        public RefreshToken DeserializeRefreshToken(string encodedRefreshToken, out RefreshToken deserializedRefreshToken)
+        public RefreshToken DeserializeRefreshToken(string encodedRefreshToken)
         {
             byte[] decodedRefreshToken = Convert.FromBase64String(encodedRefreshToken);
             string serializedRefreshToken = Encoding.UTF8.GetString(decodedRefreshToken);
             RefreshToken refreshToken = JsonSerializer.Deserialize<RefreshToken>(serializedRefreshToken)!;
 
-            return deserializedRefreshToken = refreshToken;
+            return refreshToken;
         }
 
     } 
