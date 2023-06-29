@@ -153,17 +153,16 @@ namespace BirdieDotnetAPI.Controllers
 
             Console.WriteLine(refreshToken);
 
-            var result = await (from token in _dbcontext.Tokens
-                                join user in _dbcontext.Users on token.UserId equals user.Id                             
+            var queryResult = await (from token in _dbcontext.Tokens
+                                join user in _dbcontext.Users 
+                                on token.UserId equals user.Id                             
                                 select new { token, user }).FirstOrDefaultAsync();
 
-            /* var result =  await _dbcontext.Tokens
-                                .Join(_dbcontext.Users, token => token.UserId, user => user.Id, (token, user) => new { token, user })
-                                .FirstOrDefaultAsync();  */
+            //RefreshToken? existingToken = _dbcontext.Tokens.SingleOrDefaultAsync(t => t.UserId == refreshToken.UserId).Result;
             
-            if(result == null)
+            if(queryResult == null)
             {
-                return Unauthorized(new {QueryResult = result});
+                return Unauthorized("DEBUG: Token not found");
             }
             
             else
@@ -171,35 +170,23 @@ namespace BirdieDotnetAPI.Controllers
                 using var transaction = _dbcontext.Database.BeginTransaction();
                 try 
                 {
-                    _dbcontext.Tokens.RemoveRange(_dbcontext.Tokens.Where(t => t.UserId == result.user.Id));
-
-                    var newRefreshToken = new RefreshToken() 
-                    {
-                        JwtId = Guid.NewGuid().ToString(),
-                        ExpirationDate = DateTime.UtcNow.AddDays(7),
-                        CreationDate = DateTime.UtcNow, 
-                        UserId = result.user.Id //? User id
-                    };
-
-                    await _dbcontext.Tokens.AddAsync(newRefreshToken);
+                    //_dbcontext.Tokens.RemoveRange(_dbcontext.Tokens.Where(t => t.UserId == result.user.Id));
+                    queryResult.token.JwtId = Guid.NewGuid().ToString();
+                    queryResult.token.ExpirationDate = DateTime.UtcNow.AddDays(7);
+                    queryResult.token.CreationDate = DateTime.UtcNow;
+                    queryResult.token.UserId = queryResult.user.Id;
+                    
 
                     await _dbcontext.SaveChangesAsync();
                     
                     await transaction.CommitAsync();
 
-                    //? debug
-                    var updatedToken = await (from token in _dbcontext.Tokens
-                          join user in _dbcontext.Users on token.UserId equals user.Id
-                          where token.UserId == result.user.Id
-                          select new { token, user }).FirstOrDefaultAsync();
-
-                    _tokenService.SetResponseTokens(forUser: result.user, context: Response, refreshToken: refreshToken);
+                    _tokenService.SetResponseTokens(forUser: queryResult.user, context: Response, refreshToken: refreshToken);
                 
                     return Ok(new 
                     {
                         IncomingRefreshToken = refreshToken,
-                        OldToken = result,
-                        UpdatedToken = updatedToken
+                        NewToken = queryResult.token
                     });
                 }
                 catch(Exception){

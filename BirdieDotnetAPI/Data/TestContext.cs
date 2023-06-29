@@ -24,7 +24,7 @@ public partial class TestContext : DbContext
 
     public TestContext(DbContextOptions<TestContext> options) : base(options)
     {
-
+        
     }
 
     public virtual DbSet<Conversation> Conversations { get; set; }
@@ -193,8 +193,11 @@ public partial class TestContext : DbContext
             entity.Property(e => e.ExpirationDate)
             .HasColumnType("datetime(6)");
             
-            entity.Property(e => e.CreationDate).HasColumnType("datetime(6)");
-            entity.Property(e => e.UserId).HasColumnType("int(11)");
+            entity.Property(e => e.CreationDate)
+            .HasColumnType("datetime(6)");
+            
+            entity.Property(e => e.UserId)
+            .HasColumnType("int(11)");
 
             entity.HasKey(e => e.Id);
 

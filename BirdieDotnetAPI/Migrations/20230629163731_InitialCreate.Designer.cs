@@ -3,6 +3,7 @@ using System;
 using BirdieDotnetAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -11,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BirdieDotnetAPI.Migrations
 {
     [DbContext(typeof(TestContext))]
-    [Migration("20230623212213_AddTokenEntity")]
-    partial class AddTokenEntity
+    [Migration("20230629163731_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,24 +110,21 @@ namespace BirdieDotnetAPI.Migrations
                     b.ToTable("participants", (string)null);
                 });
 
-            modelBuilder.Entity("BirdieDotnetAPI.Models.Token", b =>
+            modelBuilder.Entity("BirdieDotnetAPI.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("Expires")
+                    b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Refresh")
+                    b.Property<string>("JwtId")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("RevokedAt")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int(11)");
@@ -135,7 +133,7 @@ namespace BirdieDotnetAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tokens");
+                    b.ToTable("tokens", (string)null);
                 });
 
             modelBuilder.Entity("BirdieDotnetAPI.Models.User", b =>
@@ -143,7 +141,8 @@ namespace BirdieDotnetAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int(11)")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAddOrUpdate()
@@ -213,7 +212,7 @@ namespace BirdieDotnetAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BirdieDotnetAPI.Models.Token", b =>
+            modelBuilder.Entity("BirdieDotnetAPI.Models.RefreshToken", b =>
                 {
                     b.HasOne("BirdieDotnetAPI.Models.User", "User")
                         .WithMany()

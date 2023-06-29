@@ -3,6 +3,7 @@ using System;
 using BirdieDotnetAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -120,7 +121,6 @@ namespace BirdieDotnetAPI.Migrations
 
                     b.Property<string>("JwtId")
                         .IsRequired()
-                        .HasMaxLength(36)
                         .HasColumnType("longtext");
 
                     b.Property<int>("UserId")
@@ -130,7 +130,7 @@ namespace BirdieDotnetAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tokens", (string)null);
+                    b.ToTable("tokens", (string)null);
                 });
 
             modelBuilder.Entity("BirdieDotnetAPI.Models.User", b =>
@@ -138,7 +138,8 @@ namespace BirdieDotnetAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int(11)")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAddOrUpdate()

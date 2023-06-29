@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BirdieDotnetAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class TestMigrations : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,7 +35,7 @@ namespace BirdieDotnetAPI.Migrations
                 name: "users",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
+                    id = table.Column<int>(type: "int(11)", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     username = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false, collation: "latin1_swedish_ci")
                         .Annotation("MySql:CharSet", "latin1"),
@@ -107,6 +107,31 @@ namespace BirdieDotnetAPI.Migrations
                 .Annotation("MySql:CharSet", "latin1")
                 .Annotation("Relational:Collation", "latin1_swedish_ci");
 
+            migrationBuilder.CreateTable(
+                name: "tokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    JwtId = table.Column<string>(type: "longtext", nullable: false, collation: "latin1_swedish_ci")
+                        .Annotation("MySql:CharSet", "latin1"),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    UserId = table.Column<int>(type: "int(11)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_tokens_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "latin1")
+                .Annotation("Relational:Collation", "latin1_swedish_ci");
+
             migrationBuilder.CreateIndex(
                 name: "conversation_id",
                 table: "messages",
@@ -126,6 +151,11 @@ namespace BirdieDotnetAPI.Migrations
                 name: "user_id",
                 table: "participants",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tokens_UserId",
+                table: "tokens",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -136,6 +166,9 @@ namespace BirdieDotnetAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "participants");
+
+            migrationBuilder.DropTable(
+                name: "tokens");
 
             migrationBuilder.DropTable(
                 name: "conversations");
