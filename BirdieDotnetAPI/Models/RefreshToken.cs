@@ -2,9 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
+#nullable disable
+
 namespace BirdieDotnetAPI.Models
 {
-    public class RefreshToken
+    public record RefreshToken
     {
         
         [Key, JsonIgnore]

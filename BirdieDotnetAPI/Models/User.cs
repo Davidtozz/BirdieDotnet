@@ -12,7 +12,7 @@ namespace BirdieDotnetAPI.Models;
 
 #pragma warning disable 8618
 
-public class User  /* IdentityUser<int> */
+public record User  /* IdentityUser<int> */
 {
     [Key, JsonIgnore]
     public int Id { get; set; }
