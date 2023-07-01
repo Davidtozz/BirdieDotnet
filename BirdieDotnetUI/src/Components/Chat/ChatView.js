@@ -3,6 +3,7 @@ import MessageBubble from "./MessageBubble";
 import Contact from "../Contacts/Contact";
 import { useEffect, useState } from 'react'; 
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { ChatHubService } from "../../Services/ChatHubService";
 
 //TODO migrate Hub logic to ChatHubService
 //TODO migrate jwt cookie storage elsewhere

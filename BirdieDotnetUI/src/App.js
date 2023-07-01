@@ -8,11 +8,9 @@ import { useState } from 'react';
 
 function App() {
 
-
 	const [selectedContact, setSelectedContact] = useState('');
 
-	const handleSelectedContact = (contact) => {
-		
+	const handleSelectedContact = (contact) => {		
 		setSelectedContact(contact);
 		console.log(contact)
 	}
@@ -32,7 +30,6 @@ function App() {
     </>
   )
 }
-
 
 
 export default App;

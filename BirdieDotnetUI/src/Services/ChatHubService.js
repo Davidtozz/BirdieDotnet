@@ -1,60 +1,55 @@
+import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
-//TODO Use service instead of ChatView's logic
+let instance;
 
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+export default class ChatHubService{
 
-export let hubConnection = null;
+	hubConnection = null;
+	baseUrl = "https://localhost:5069";
+	
 
+	constructor() {
 
-export const subscribeToHub = async (url, setMessages) => {
+		if(instance) {
+			throw new Error("ChatHubService is a singleton.")
+		}
 
-	hubConnection = new HubConnectionBuilder()
-	.withUrl(url)
-	.configureLogging(LogLevel.Information)
-	.withAutomaticReconnect()
-	.build();
+		this.hubConnection = new HubConnectionBuilder()
+			.withUrl(this.baseUrl + "/chatHub")
+			.configureLogging(LogLevel.Debug)
+			.withAutomaticReconnect()
+			.build();
 
-	await hubConnection.start()
-	try	{ //! DEBUG
-		console.log("DEBUG: SignalR connection established")
-	} catch(err) {
-		console.log("Couldn't start connection to hub:", err)
-	} finally {
-		mapEventHandlers(setMessages);
+		instance = this;
 	}
-}
 
-async function mapEventHandlers(setMessages) {
-	hubConnection.on("ReceiveMessage", (id, msg, user) => {
-
-		const incomingMessage = {
-			text: msg,
-			incoming: true
+	async subscribe(setMessages) {
+		
+		try	{
+			await this.hubConnection.start()
+			console.log("DEBUG: SignalR connection established")
+		} catch(err) {
+			console.log("Couldn't start connection to hub:", err)
+		}
+		finally {
+			await this.mapEventHandlers(setMessages)	
 		}
 		
-		if(hubConnection.connectionId !== id) {
-			setMessages(prevMessages => [...prevMessages, incomingMessage])
-			console.log(`Received: ${msg} \nfrom: ${user.name}`)
-		}
-	
-	})
+	}
+
+	async mapEventHandlers(setMessagesCallback) {
+		this.hubConnection.on("ReceiveMessage", (id, msg, user) => {
+
+			const incomingMessage = {
+				text: msg,
+				incoming: true
+			}
+			
+			if(this.hubConnection.connectionId !== id) {
+				setMessagesCallback(prevMessages => [...prevMessages, incomingMessage])
+				console.log(`Received: ${msg} \nfrom: ${user.name}`)
+			}
+		
+		})
+	}
 }
-
-/* export const sendMessage = async (e) => {
-	if (e.key === 'Enter') {
-	  
-	  //! DEBUG
-	  console.log(e.target.value);
-
-	  await hubConnection.invoke("SendMessage", e.target.value, {name: "Jovanotti"});
-	
-	  const outgoingMessage = { //TODO manage logged user 
-		  text: e.target.value,
-		  incoming: false
-	  }
-	  
-	  await setMessages(prevMessages => [...prevMessages, outgoingMessage])
-	  e.target.value = ""
-	
-  }
-}; */

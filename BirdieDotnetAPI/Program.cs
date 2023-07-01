@@ -2,21 +2,25 @@ using BirdieDotnetAPI.Data;
 using BirdieDotnetAPI.Hubs;
 using BirdieDotnetAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Asn1.Ocsp;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder();
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<TestContext>( optionsAction: options => {
-    options.UseMySql(connectionString, ServerVersion.Parse("10.4.28-mariadb"));
+#pragma warning disable CS0219
+
+string localDatabase = builder.Configuration.GetConnectionString("DefaultConnection")!;
+string localDataaseVersion = "10.4.28-mariadb";
+
+var remoteDatabase = builder.Configuration.GetConnectionString("NanodeMysql"); //? remote instance
+var remoteDatabaseVersion = "8.0.33-0ubuntu0.20.04.2";
+
+#pragma warning restore CS0219
+
+builder.Services.AddDbContext<TestContext>(optionsAction: options =>
+{
+    options.UseMySql(connectionString: localDatabase, ServerVersion.Parse(localDataaseVersion));
 });
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
@@ -37,12 +41,6 @@ builder.Services.AddCors(options =>
 builder.WebHost.UseKestrel(options => {
     options.AddServerHeader = false;
 });
-
-/* builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => {
-    options.Password.RequiredLength = 12;
-    options.Password.RequireDigit = true;
-    options.SignIn.RequireConfirmedEmail = true;
-}).AddEntityFrameworkStores<TestContext>(); */
 
 //TODO encrypt JWT tokens
 builder.Services.AddAuthentication(x => {
