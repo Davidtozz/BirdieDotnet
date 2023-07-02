@@ -1,12 +1,10 @@
 import { HubConnectionBuilder, LogLevel, HubConnection } from '@microsoft/signalr';
 
-
-
 export default class ChatHubService {
 
-    private static _instance: ChatHubService;
+    public static _instance: ChatHubService;
+    private hubConnection: HubConnection;
 
-    hubConnection: HubConnection = null!;
     private constructor() {
         this.hubConnection = new HubConnectionBuilder()
         .withUrl("http://localhost:5069/chatHub")
@@ -15,7 +13,7 @@ export default class ChatHubService {
         .build();
     }
 
-    public static getInstance(): ChatHubService {
+    public static get instance(): ChatHubService {
         if (!ChatHubService._instance) {
             ChatHubService._instance = new ChatHubService();
         }
@@ -27,7 +25,7 @@ export default class ChatHubService {
         return this.hubConnection;
     }
 
-    public async subscribe() {
+    public async subscribeToHub() {
         try {
             await this.hubConnection.start();
         } catch (err) {
@@ -39,14 +37,9 @@ export default class ChatHubService {
         console.log("connected");
     }
 
-
     private async mapEventHandlers() {
         this.hubConnection.on("ReceiveMessage", (user, message) => {
             console.log(user + " says " + message);
         });
     }
-
 }
-
-
-let chatHubService = ChatHubService.getInstance();

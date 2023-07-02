@@ -1,8 +1,13 @@
+import React from "react";
 
-export const LandingPage = () => {
 
-    //TODO - implement landing page
+const LandingPage = () => {
 
-    return <></>
+    //TODO: Implement chat interface
 
+    return (
+        <div></div>
+    )
 }
+
+export default LandingPage;
