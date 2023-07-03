@@ -3,7 +3,7 @@ import React from "react";
 const LoginPage = () => {
 
     return (
-        <div></div>
+        <h1>I'm the login page!</h1>
     )
 }
 

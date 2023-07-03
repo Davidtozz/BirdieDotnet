@@ -1,4 +1,6 @@
 import { HubConnectionBuilder, LogLevel, HubConnection } from '@microsoft/signalr';
+import User  from 'types/User';
+import Message  from 'types/Message';
 
 export default class ChatHubService {
 
@@ -38,7 +40,7 @@ export default class ChatHubService {
     }
 
     private async mapEventHandlers() {
-        this.hubConnection.on("ReceiveMessage", (user, message) => {
+        this.hubConnection.on("ReceiveMessage", (user: User, message: Message) => {
             console.log(user + " says " + message);
         });
     }

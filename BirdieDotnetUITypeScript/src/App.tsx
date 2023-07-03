@@ -1,19 +1,18 @@
 import './App.css';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { ChatInterfacePage, LandingPage, LoginPage, RegisterPage } from '@pages/index';
+import { Route, Routes} from 'react-router-dom';
+import ChatInterfacePage  from './pages/ChatInterfacePage';
+import LandingPage from './pages/LandingPage'; 
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
-    <div className="App">
-
-      <Router>
-        <Route path="/" Component={LandingPage} />
-        <Route path="/register" Component={RegisterPage} />
-        <Route path="/login" Component={LoginPage} />
-        <Route path="/chat" Component={ChatInterfacePage} />
-      </Router>
-      
-    </div>
+    <Routes>
+      <Route path="/" Component={LandingPage} />
+      <Route path="/register" Component={RegisterPage} />
+      <Route path="/login" Component={LoginPage} />
+      <Route path="/chat" Component={ChatInterfacePage} />
+    </Routes>
   );
 }
 

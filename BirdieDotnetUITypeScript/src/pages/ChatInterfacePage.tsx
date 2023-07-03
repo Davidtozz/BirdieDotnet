@@ -6,7 +6,7 @@ const ChatInterfacePage = () => {
     //TODO: Implement chat interface
 
     return (
-        <div></div>
+        <h1>I'm the chat page!</h1>
     )
 }
 

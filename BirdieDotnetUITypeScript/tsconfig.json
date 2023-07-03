@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "paths" : {
-      "@components/*" : ["components/*"],
-      "@pages/*" : ["pages/*"],
-      "@services" : ["services/*"],
-      "@types/*" : ["types/*"],
-      "@assets/*" : ["assets/*"],
-    },
+    /* "paths" : {
+      "components" : ["./components/*"],
+      "pages" : ["pages/*"],
+      "services" : ["./services/*"],
+      "types" : [
+        "./types/*"
+      ],
+      "@assets" : ["assets/*"],
+    }, */
+    //TODO Fix paths not being recognized
     "target": "ES6",
     "lib": [
       "dom",
