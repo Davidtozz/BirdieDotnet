@@ -5,7 +5,7 @@ import Message  from 'types/Message';
 export default class ChatHubService {
 
     public static _instance: ChatHubService;
-    private hubConnection: HubConnection;
+    private readonly hubConnection: HubConnection;
 
     private constructor() {
         this.hubConnection = new HubConnectionBuilder()
@@ -39,7 +39,7 @@ export default class ChatHubService {
         console.log("connected");
     }
 
-    private async mapEventHandlers() {
+    private async mapEventHandlers(): Promise<void> {
         this.hubConnection.on("ReceiveMessage", (user: User, message: Message) => {
             console.log(user + " says " + message);
         });

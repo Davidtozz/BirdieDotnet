@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+$formCardColor: rgba(186, 151, 255, 0.20);
+
+.formWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  width: 22rem;
+  /*min-width: 20rem;*/
+  height: 31.5rem;
+  flex-shrink: 0;
+  border-radius: 1.25rem;
+  opacity: 0.800000011920929;
+  background: $formCardColor; 
+
+  .logoWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    width: 4rem;
+    height: 5.125rem;
+    flex-shrink: 0;
+
+    .logo {
+      width: 3.125rem;
+      height: 3.125rem;
+      flex-shrink: 0;
+    }
+
+    .logoHeading {
+      /* Layout */
+      width: 4rem;
+      margin: 0;
+      height: 1.6875rem;
+      flex-shrink: 0;
+
+      /* Typography */
+      font-size: 1.5rem;
+      font-family: Lato, sans-serif;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+  }
+
+  .formContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: fit-content;
+    gap: 1.5rem;
+    flex: 1;
+  }
+
+  .formSubmit {
+    display: flex;
+    width: 11.3125rem;
+    height: 2.125rem;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 0.625rem;
+    background: #8C52FF;
+    color: #FFF;
+    text-align: center;
+    font-size: 0.875rem;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    cursor: pointer;
+  }
+}

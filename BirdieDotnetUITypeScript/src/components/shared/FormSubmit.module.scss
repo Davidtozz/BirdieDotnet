@@ -1,0 +1,18 @@
+.formSubmit {
+    display: flex;
+    width: 11.3125rem;
+    height: 2.125rem;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 0.625rem;
+    background: #8C52FF;
+    color: #FFF;
+    text-align: center;
+    font-size: 0.875rem;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    cursor: pointer;
+}

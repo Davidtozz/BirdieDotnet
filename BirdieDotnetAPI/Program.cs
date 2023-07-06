@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder();
 #pragma warning disable CS0219
 
 string localDatabase = builder.Configuration.GetConnectionString("DefaultConnection")!;
-string localDataaseVersion = "10.4.28-mariadb";
+string localDatabaseVersion = "10.4.28-mariadb";
 
 var remoteDatabase = builder.Configuration.GetConnectionString("NanodeMysql"); //? remote instance
 var remoteDatabaseVersion = "8.0.33-0ubuntu0.20.04.2";
@@ -20,7 +20,7 @@ var remoteDatabaseVersion = "8.0.33-0ubuntu0.20.04.2";
 
 builder.Services.AddDbContext<TestContext>(optionsAction: options =>
 {
-    options.UseMySql(connectionString: localDatabase, ServerVersion.Parse(localDataaseVersion));
+    options.UseMySql(connectionString: localDatabase, ServerVersion.Parse(localDatabaseVersion));
 });
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);

@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+.fieldWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    width: 19.625rem;
+    height: 3.375rem;
+    flex-shrink: 0;
+    .fieldLabel {
+        display: flex;
+        width: 4.0625rem;
+        height: 1.1875rem;
+        flex-direction: column;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #000;
+        font-size: 0.8rem;
+        text-indent: 5px;
+        font-family: 'Lato', sans-serif;
+        font-weight: 700;
+        line-height: normal;
+    }
+
+    .fieldInput {
+        width: 19.625rem;
+        height: 2.1875rem;
+        flex-shrink: 0;
+        border-radius: 0.625rem;
+        border: 1px solid rgba(0, 0, 0, 0.11);
+        background: rgba(140, 82, 255, 0.46);
+        text-indent: 5px;
+        color: #FFFEFF;
+        font-size: 1rem;
+        font-family: Lato;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+    }
+}
