@@ -67,6 +67,8 @@ namespace BirdieDotnetAPI.Controllers
         {
             //TODO Add Exception handling
 
+            
+
             #region IsUserAlreadyRegistered
 
             var foundUser = await _dbcontext.Users.FirstOrDefaultAsync((u) => 

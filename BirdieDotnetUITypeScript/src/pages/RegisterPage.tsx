@@ -4,10 +4,9 @@ import styles from './RegisterPage.module.scss';
 const RegisterPage = () => {
     
     return (
-
-            <div className={styles.registerWrapper}>
-                <RegisterForm />
-            </div>
+        <div className={styles.registerWrapper}>
+            <RegisterForm />
+        </div>
     )
 }
 

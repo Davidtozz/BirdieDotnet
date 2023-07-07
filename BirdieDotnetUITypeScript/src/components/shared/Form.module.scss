@@ -2,6 +2,13 @@
 
 $formCardColor: rgba(186, 151, 255, 0.20);
 
+@mixin center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
 .formWrapper {
   display: flex;
   flex-direction: column;
@@ -56,22 +63,42 @@ $formCardColor: rgba(186, 151, 255, 0.20);
     flex: 1;
   }
 
-  .formSubmit {
-    display: flex;
-    width: 11.3125rem;
-    height: 2.125rem;
+  .formFooter {
+    
+    @include center;
     flex-direction: column;
-    justify-content: center;
-    flex-shrink: 0;
-    border-radius: 0.625rem;
-    background: #8C52FF;
-    color: #FFF;
-    text-align: center;
-    font-size: 0.875rem;
-    font-family: Lato;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-    cursor: pointer;
+
+    .formSubmit {
+      display: flex;
+      width: 11.3125rem;
+      height: 2.125rem;
+      flex-direction: column;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 0.625rem;
+      background: #8C52FF;
+      color: #FFF;
+      text-align: center;
+      font-size: 0.875rem;
+      font-family: Lato;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      cursor: pointer;
+    }
+
+    .loginRedirect {
+      /* Style the custom Link from react router element */
+      text-decoration: none;
+      color: #8C52FF; 
+
+      font-family: Lato;
+    
+      font-weight: 500; 
+
+    }
   }
+
+
+
 }

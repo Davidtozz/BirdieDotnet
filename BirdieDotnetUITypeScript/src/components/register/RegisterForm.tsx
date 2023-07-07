@@ -1,10 +1,13 @@
-import styles  from './RegisterForm.module.scss';
+import styles  from 'components/shared/Form.module.scss';
 import {ReactComponent as BirdieLogo } from '../../assets/svg/BirdieLogo.svg';
 import FormField from '../shared/FormField';
 import FormSubmit from 'components/shared/FormSubmit';
 import ApiService  from 'services/ApiService';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import RegisterModel from 'models/RegisterModel';
+import Result from 'types/Result';
+import { AxiosError } from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const RegisterForm = () => {
@@ -13,49 +16,32 @@ const RegisterForm = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-    const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-
-        switch(event.target.name) {
-            case 'username':
-                await setUsername(event.target.value);
-                break;
-            case 'email':
-                await setEmail(event.target.value);
-                break;
-            case 'password':
-                await setPassword(event.target.value);
-                break;
-        }
-
-        console.log(event.target.value);
-    }
-
-    //TODO Fix handleSubmit HTTP 415 error
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-    
-        const userData: RegisterModel = {
-          username,
-          email,
-          password
-        };
-    
-        fetch(`http://localhost:5069/api/user/register`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              
-            },
-            body: JSON.stringify(userData)
-          })
-          .then(response => response.json())
-          .catch(error => console.log("Couldn't register", error));
+
+       const result: Result<string, AxiosError> =  await apiService.registerUser({
+            username,
+            email,
+            password
+        } as RegisterModel);
+
+        if(result.success)
+        {
+            console.log("User registered successfully");
+            navigate('/chat');
+        }
+        else {
+            console.table({
+                status: result.error.status,
+                message: result.error.message,
+            });
+        }
       };
 
-
     return (
-        <form className={styles.formWrapper} action="http://localhost:5069/api/user/register" method="POST">
+        <form className={styles.formWrapper} onSubmit={handleSubmit}>
             <div className={styles.logoWrapper}>
                 <BirdieLogo className={styles.logo} />
                 <h1 className={styles.logoHeading}>Birdie</h1>
@@ -65,31 +51,32 @@ const RegisterForm = () => {
                     name='username' 
                     label="Username" 
                     placeholder="Enter your username" 
-                    onFieldChange={handleChange}
+                    onChange={(e) => setUsername(e.target.value)}
                     type="text" />
 
                 <FormField 
                     name='email' 
                     label="Email" 
                     placeholder="Enter your email" 
-                    onFieldChange={handleChange}
+                    onChange={(e) => setEmail(e.target.value)}
                     type="email"/>
 
                 <FormField 
                     name='password' 
                     label="Password" 
                     placeholder="Enter your password" 
-                    onFieldChange={handleChange}
+                    onChange={(e) => setPassword(e.target.value)}
                     type="password"/>
             </div>
-            <div>
-              <FormSubmit 
-              onSubmit={handleSubmit} />    
+            <div className={styles.formFooter}>
+              <FormSubmit />    
+              <p>Already have an account? <span>
+                <Link to="/login" className={styles.loginRedirect}>Login</Link>
+                </span>
+              </p>
             </div>
         </form>
     )
 }
 
-
-/* className={styles.formSubmitWrapper} */
 export default RegisterForm;

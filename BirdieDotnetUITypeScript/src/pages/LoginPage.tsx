@@ -1,9 +1,14 @@
+import LoginForm from "components/login/LoginForm";
+import styles from "./LoginPage.module.scss";
 import React from "react";
+
 
 const LoginPage = () => {
 
     return (
-        <h1>I'm the login page!</h1>
+        <div className={styles.loginWrapper}>
+            <LoginForm />
+        </div>
     )
 }
 

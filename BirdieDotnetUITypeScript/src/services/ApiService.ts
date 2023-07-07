@@ -1,5 +1,5 @@
 import RegisterModel from "models/RegisterModel";
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Result from "types/Result";
 
 
@@ -17,28 +17,17 @@ export default class ApiService {
     return ApiService._instance;
   }
 
-  public async registerUser(data: RegisterModel): Promise<void> {
-    
-    console.log(data);
-
-    fetch(`${this._baseUrl}/user/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .catch(error => console.log("Couldn't register", error));
-
-   /*  try {
-      await axios.post(`${this._baseUrl}/user/register`, data)
-    } catch (error) {
-      console.log("Couldn't register", error);
-
-
-    } */
+  public async registerUser(model: RegisterModel): Promise<Result<string, AxiosError>> {
+  
+    console.table(model);
+  
+    try {
+      await axios.post(`${this._baseUrl}/user/register`, model)
+      return {success: true, value: "User registered successfully"};
+    } catch (error: any) {
+      console.log("Couldn't register", error.message);
+      return {success: false, error: error as AxiosError};
+    }
   
   }
 }
