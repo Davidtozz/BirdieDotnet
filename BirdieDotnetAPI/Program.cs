@@ -2,8 +2,12 @@ using BirdieDotnetAPI.Data;
 using BirdieDotnetAPI.Hubs;
 using BirdieDotnetAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder();
@@ -30,20 +34,29 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("https://localhost:5069")
+        builder.WithOrigins("https://localhost:3000")
             .AllowAnyHeader()
             .WithMethods("GET", "POST")
             .AllowCredentials();
     });
 });
 
+
 //? Remove Server response header
 builder.WebHost.UseKestrel(options => {
     options.AddServerHeader = false;
 });
 
+//? Configure Kestrel to use HTTPS. Disabled in development
+/* builder.Services.Configure<KestrelServerOptions>(options => {
+    options.Listen(IPAddress.Any, 5069, listenOptions => {
+        listenOptions.UseHttps();
+    });
+}); */
+
 //TODO encrypt JWT tokens
 builder.Services.AddAuthentication(x => {
+    
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options => {
@@ -55,6 +68,7 @@ builder.Services.AddAuthentication(x => {
         ValidateIssuerSigningKey = true, 
         ValidIssuer = builder.Configuration["Jwt:Issuer"], //dev: localhost
         ValidAudience = builder.Configuration["Jwt:Audience"], //dev: localhost
+        //ValidateLifetime = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
         ClockSkew = TimeSpan.Zero
     };
@@ -80,23 +94,14 @@ builder.Services.AddAuthentication(x => {
     };
 });
 
-builder.Services.AddAuthorization(options => {
-    options.AddPolicy("RefreshExpiredToken", policy => {
-        policy.RequireAssertion(context => {
-            var httpContext = context.Resource as HttpContext;
-        
-            return httpContext!.Request.Cookies.ContainsKey("X-Refresh-Token");
-        }); 
-    });
 
-});
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+/* app.UseHttpsRedirection(); */
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<ChatHub>("/chathub").RequireAuthorization();
 app.MapControllers(); 
-app.Run(); 
+app.Run();

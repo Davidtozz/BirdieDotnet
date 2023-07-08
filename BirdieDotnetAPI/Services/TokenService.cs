@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using BirdieDotnetAPI.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -34,7 +35,7 @@ namespace BirdieDotnetAPI.Services
                     new Claim("username", user.Username),
                     new Claim("role", role)
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30), //TODO dev only. lower duration in production
+                Expires = DateTime.UtcNow.AddSeconds(30), //TODO dev only. lower duration in production
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
                 /* Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Audience"] */
@@ -59,13 +60,15 @@ namespace BirdieDotnetAPI.Services
             accessTokenOptions ??= new () {
                 HttpOnly = true,
                 SameSite = SameSiteMode.Strict,
-                Secure = true
+                Secure = false //TODO set to true in production
             };
 
             refreshTokenOptions ??= new () {
                 HttpOnly = true,
                 SameSite = SameSiteMode.Strict,
-                Path = "/api/user/refresh"
+                Secure = false, //TODO set to true in production
+                Path = "/api/user/refresh",
+                MaxAge = TimeSpan.FromDays(7)
             };
 
             string encodedRefreshToken = SerializeRefreshToken(refreshToken);

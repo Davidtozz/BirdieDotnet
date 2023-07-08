@@ -1,11 +1,13 @@
 import RegisterForm from 'components/register/RegisterForm';
-import styles from './RegisterPage.module.scss';
+import styles from "components/shared/FormPage.module.scss";
+
 
 const RegisterPage = () => {
     
     return (
-        <div className={styles.registerWrapper}>
+        <div className={styles.pageWrapper}>
             <RegisterForm />
+            <div className={styles.waveContainer}></div>
         </div>
     )
 }

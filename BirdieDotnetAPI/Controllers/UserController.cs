@@ -24,7 +24,6 @@ namespace BirdieDotnetAPI.Controllers
         private readonly TestContext _dbcontext; 
         private readonly TokenService _tokenService;
         
-
         public UserController(TestContext dbcontext, TokenService tokenService) 
         {
             _dbcontext = dbcontext;
@@ -36,7 +35,7 @@ namespace BirdieDotnetAPI.Controllers
         
         public IActionResult GetAllUsers()
         {
-            Console.WriteLine(HttpContext.Request.Headers.Authorization);
+            
             //? Selects all rows in DB
             var users = _dbcontext.Users;
             
@@ -144,10 +143,14 @@ namespace BirdieDotnetAPI.Controllers
 
             _tokenService.SetResponseTokens(forUser: queryResult, context: Response, refreshToken: refreshToken);
 
+            //? Simulate a 2000ms delay
+            //await Task.Delay(2000);
+
+
             return  Ok();
         }
 
-        [Authorize(Policy = "RefreshExpiredToken")] 
+        [AllowAnonymous] 
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken() //! Only the refresh token should be sent here 
         {                

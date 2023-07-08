@@ -5,6 +5,10 @@ import ApiService from 'services/ApiService';
 import { ReactComponent as BirdieLogo } from '../../assets/svg/BirdieLogo.svg';
 import FormField from 'components/shared/FormField';
 import FormSubmit from 'components/shared/FormSubmit';
+import LoginModel from 'models/LoginModel';
+import { AxiosError, AxiosResponse } from 'axios';
+import Result from 'types/Result';
+
 
 //TODO auth page related components 
 const LoginForm = () => {
@@ -12,12 +16,22 @@ const LoginForm = () => {
     const apiService = ApiService.instance;
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+    const navigateTo = useNavigate();
 
-
-
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
-        throw new Error('Function not implemented.');
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      
+      const response: Result<AxiosResponse, AxiosError> = await apiService.loginUser({
+        username,
+        password,     
+      } as LoginModel)
+      
+      if (response.success && response.value.status === 200) {
+        console.log("User logged successfully");
+        navigateTo("/chat");
+      } else if(!response.success) {            
+        console.table({ status: response.error.status, reason: response.error.message });
+      }
     }
 
     return (
