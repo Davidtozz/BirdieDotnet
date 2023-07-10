@@ -37,7 +37,6 @@ const ChatInterfacePage = () => {
 
     return (
     
-    
         <div>
             <h1>Chat Interface</h1>
             <button onClick={handleGetUsers}>Get users</button>

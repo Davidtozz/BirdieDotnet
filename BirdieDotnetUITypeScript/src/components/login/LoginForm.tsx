@@ -30,7 +30,7 @@ const LoginForm = () => {
         console.log("User logged successfully");
         navigateTo("/chat");
       } else if(!response.success) {            
-        console.table({ status: response.error.status, reason: response.error.message });
+        console.table({ status: response.error?.status, reason: response.error?.message });
       }
     }
 

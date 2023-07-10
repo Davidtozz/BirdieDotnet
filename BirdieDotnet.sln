@@ -5,8 +5,6 @@ VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BirdieDotnetAPI", "BirdieDotnetAPI\BirdieDotnetAPI.csproj", "{FAB70D83-0BC1-410C-9E69-50D8FBE89F27}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BirdieDotnetCLI", "BirdieDotnetCLI\BirdieDotnetCLI.csproj", "{0AFAE4F6-06B1-4AF2-A8A7-00D09E388C63}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

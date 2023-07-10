@@ -9,6 +9,7 @@ import Result from "types/Result";
 import { AxiosError, AxiosResponse } from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
+
 const RegisterForm = () => {
   const apiService = ApiService.instance;
   const [username, setUsername] = useState("");
@@ -16,25 +17,27 @@ const RegisterForm = () => {
   const [password, setPassword] = useState("");
   const navigateTo = useNavigate();
 
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const result: Result<AxiosResponse, AxiosError> = await apiService.registerUser({
+    const registerFormData: RegisterModel = {
       username,
       email,
       password,
-    } as RegisterModel);
+    } 
+
+    const result: Result<AxiosResponse, AxiosError> = await apiService.registerUser(registerFormData);
     
     console.log(Object.keys(result));
 
     if (result.success) {
-
       console.log("User registered successfully");
       navigateTo("/chat");
-    } else {
+    } else if(!result.success) {
       console.table({
-        status: result.error.status,
-        message: result.error.message,
+        status: result.error!.status,
+        message: result.error!.message
       });
     }
   };

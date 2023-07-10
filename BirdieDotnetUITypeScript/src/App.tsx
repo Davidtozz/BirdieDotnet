@@ -1,14 +1,13 @@
 import './App.css';
-
 import { Route, Routes} from 'react-router-dom';
-
 import ChatInterfacePage  from './pages/ChatInterfacePage';
 import LandingPage from './pages/LandingPage'; 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+/* import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; */
 
 function App() {
-
+/*   const queryClient = new QueryClient({}); */
   return (
       <Routes>
         <Route path="/" Component={LandingPage} />

@@ -11,6 +11,7 @@ using Org.BouncyCastle.Asn1.X509.Qualified;
 using System.Text;
 using System.ComponentModel;
 using NuGet.Common;
+using System.Runtime.CompilerServices;
 
 namespace BirdieDotnetAPI.Controllers
 {
@@ -150,7 +151,7 @@ namespace BirdieDotnetAPI.Controllers
             return  Ok();
         }
 
-        [AllowAnonymous] 
+        [AllowAnonymous]
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken() //! Only the refresh token should be sent here 
         {                
@@ -175,15 +176,12 @@ namespace BirdieDotnetAPI.Controllers
                 using var transaction = _dbcontext.Database.BeginTransaction();
                 try 
                 {
-                    //_dbcontext.Tokens.RemoveRange(_dbcontext.Tokens.Where(t => t.UserId == result.user.Id));
                     queryResult.token.JwtId = Guid.NewGuid().ToString();
                     queryResult.token.ExpirationDate = DateTime.UtcNow.AddDays(7);
                     queryResult.token.CreationDate = DateTime.UtcNow;
-                    queryResult.token.UserId = queryResult.user.Id;
-                    
+                    queryResult.token.UserId = queryResult.user.Id;   
 
                     await _dbcontext.SaveChangesAsync();
-                    
                     await transaction.CommitAsync();
 
                     _tokenService.SetResponseTokens(forUser: queryResult.user, context: Response, refreshToken: refreshToken);
