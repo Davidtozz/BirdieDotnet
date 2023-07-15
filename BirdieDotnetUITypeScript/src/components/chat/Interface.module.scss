@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap');
+
+$purple: #8C52FF;
+$lightPurple: #BB98FF;
+$darkPurple: #6A2BFF;
+$lightGrey: rgba(0,0,0,0.2);
+$darkGrey: #E0E0E0;
+
+
+.interfaceContainer {
+  display: flex;
+  height: 100%;
+  width: 100%;
+
+  /* On bigger screen, set padding to 4rem all around, and add rounded corners */
+  padding: 4rem 0 0 4rem;
+  background: $purple;
+  
+  .interface {
+    display: flex;
+    flex: 1;
+    border-radius: 1.25rem 0 0 0;
+    background: #FFFEFF;
+   
+
+  }
+}

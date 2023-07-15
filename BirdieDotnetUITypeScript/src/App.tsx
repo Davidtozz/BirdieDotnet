@@ -4,10 +4,12 @@ import ChatInterfacePage  from './pages/ChatInterfacePage';
 import LandingPage from './pages/LandingPage'; 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-/* import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; */
 
 function App() {
-/*   const queryClient = new QueryClient({}); */
+
+  //TODO - Add react-query provider
+  //TODO - Restrict access to chat interface page to logged in users only
+
   return (
       <Routes>
         <Route path="/" Component={LandingPage} />
@@ -16,6 +18,7 @@ function App() {
         <Route path="/chat" Component={ChatInterfacePage} />
         <Route path="*" element={<h1>Woops! You seem to be lost</h1>}  />
       </Routes>
+
   );
 }
 

@@ -1,3 +1,6 @@
+/**
+ * Represents a message in the chat
+ */
 type Message =  {
     id: number;
     sender: string;

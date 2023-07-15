@@ -28,8 +28,6 @@ const RegisterForm = () => {
     } 
 
     const result: Result<AxiosResponse, AxiosError> = await apiService.registerUser(registerFormData);
-    
-    console.log(Object.keys(result));
 
     if (result.success) {
       console.log("User registered successfully");

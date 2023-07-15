@@ -1,4 +1,3 @@
-import FormFieldProps from 'types/FormFieldProps';
 import styles from './FormField.module.scss';
 
 const FormField = ({ label, ...otherProps }: FormFieldProps) => {
@@ -10,5 +9,10 @@ const FormField = ({ label, ...otherProps }: FormFieldProps) => {
         </div>
     )
 }
+
+type FormFieldProps = {
+    label: string;
+} & React.InputHTMLAttributes<HTMLInputElement>;
+
 
 export default FormField;

@@ -1,0 +1,36 @@
+.chatView{
+    display: flex;
+    background-color: red;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 7;
+
+    .chatHeader {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: #d426d4;
+    }
+
+    .chatBody {
+      display: flex;
+      flex-direction: column;
+      overflow: scroll;
+      padding: 1rem;
+      background-color: #e16767;
+      flex: 1;
+    }
+
+    .chatFooter {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: #d93dd9;
+    }     
+  }
