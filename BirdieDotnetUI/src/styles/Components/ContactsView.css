@@ -1,4 +1,4 @@
-.list-view{  
+.list-view {  
     background-color: var(--block-bg-color);
     border-right: 1px solid var(--container-stroke);
     flex: 3;

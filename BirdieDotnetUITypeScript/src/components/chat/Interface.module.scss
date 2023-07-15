@@ -11,6 +11,7 @@ $darkGrey: #E0E0E0;
   display: flex;
   height: 100%;
   width: 100%;
+  overflow: auto;
 
   /* On bigger screen, set padding to 4rem all around, and add rounded corners */
   padding: 4rem 0 0 4rem;
