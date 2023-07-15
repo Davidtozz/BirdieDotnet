@@ -8,8 +8,7 @@ const Contact = ({name, picture}: ContactProps)  => {
         <div className={styles.contactCard}>
             
             <div className={styles.propicWrapper}>
-{/*                 <img className={styles.propic} src={picture} alt='pic'/>
- */}
+            {/*  <img className={styles.propic} src={picture} alt='pic'/>   */}
             <FontAwesomeIcon icon={faCircleUser} className={styles.propic} />
  
              </div>
@@ -19,7 +18,7 @@ const Contact = ({name, picture}: ContactProps)  => {
                 <h4>Dolor sit amet...</h4>    
             </div>
             <div className="messageInfo">
-                <div className="last-message-time">6:50</div> 
+                6:50 
             </div>
 
         </div>

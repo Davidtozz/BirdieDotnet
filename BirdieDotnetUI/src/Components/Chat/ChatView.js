@@ -56,7 +56,7 @@ function ChatView(props) {
         let message = e.target.value
 
         /* {Content: e.target.value, SenderId:76} */
-        await hubConnection.invoke("SendMessage", message);
+       /*  await hubConnection.invoke("SendMessage", message); */
         
         const outgoingMessage = { //TODO manage logged user 
             text: e.target.value,

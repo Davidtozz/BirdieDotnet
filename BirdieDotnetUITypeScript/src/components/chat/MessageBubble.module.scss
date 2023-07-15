@@ -1,0 +1,52 @@
+
+.messageBubbleWrapper {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	height: fit-content;
+
+  &.reversed {
+    flex-direction: row-reverse;
+  }
+
+  .triangle {
+    width: 0;
+    height: 0;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    position: relative;
+    top: 0.6rem;
+    border-left: 20px solid white;
+    rotate: 180deg;
+
+    &.reversed {
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      position: relative;
+      top: 0.6rem;
+      border-left: 20px solid #BB98FF;
+      rotate: 0deg;
+      
+    }
+  }
+
+  .messageBubble {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    max-width: 15rem;
+    padding: 0 0.5rem;
+    min-height: 50px;
+    height: fit-content;
+    background-color: white;
+    border-radius: 10px;
+    /* outline: 1px solid red; */ /* TODO add a slight outline to bubble and triangle */
+    font-family: "Roboto", sans-serif;
+    &.reversed {
+      background-color: #BB98FF;
+      color: white;
+    }
+  }
+}

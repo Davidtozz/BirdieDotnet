@@ -8,18 +8,53 @@
     .chatHeader {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
       align-items: center;
       padding: 1rem;
-      background-color: #d426d4;
+      background-color: #fdfdfd;
+
+      .propic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 1rem;
+        object-fit: cover;
+      }
+      .contactInfo {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        
+        justify-content: space-evenly;
+        color: black;
+        font-family: 'Roboto', sans-serif;
+        flex: 1;
+        
+
+        .optionsIcon {
+          width: 16px;
+          height: 16px;
+          cursor: pointer;
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 16px;
+        }
+        p {
+          font-size: 14px;
+          font-style: italic;
+          margin: 0;
+        }
+      }
     }
 
     .chatBody {
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
       overflow: scroll;
       padding: 1rem;
-      background-color: #e16767;
+      background-color: rgb(226, 226, 226);
       flex: 1;
     }
 
@@ -31,6 +66,15 @@
       justify-content: space-between;
       align-items: center;
       padding: 1rem;
-      background-color: #d93dd9;
+      background-color: #fdfdfd;
+
+      input {
+        flex: 1;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        margin-right: 1rem;
+        font-family: 'Roboto';
+      }
     }     
   }

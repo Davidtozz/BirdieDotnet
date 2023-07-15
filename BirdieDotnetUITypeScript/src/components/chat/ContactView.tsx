@@ -4,6 +4,14 @@ import Contact from "./Contact";
 import styles from "./ContactView.module.scss";
 
 const ContactView = () => {
+
+  /**
+   * This is a dummy array of contacts for testing purposes.
+   */
+  const contactElements = Array.from({ length: 20 }, (_, index) => (
+    <Contact key={index} name={"John Doe"} picture={"none"} />
+  ));
+
   return (
     <div className={styles.contactView}>
       <div className={styles.searchCard}>
@@ -11,54 +19,10 @@ const ContactView = () => {
         {/* <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} /> */}
       </div>
 
-      <hr className={styles.divider} />
+      {/* <hr className={styles.divider} /> */}
 
-      <div className={styles.contactList}>
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
-        <Contact name={"John Doe"} picture={"none"} />
+      <div className={styles.contactList}>  
+        {contactElements}
       </div>
     </div>
   );

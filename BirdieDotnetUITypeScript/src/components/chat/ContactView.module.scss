@@ -25,8 +25,6 @@ $darkGrey: #E0E0E0;
       flex: 6;
     }
 
-    
-
     .searchCard {
       display: flex;
       align-items: center;
@@ -45,17 +43,14 @@ $darkGrey: #E0E0E0;
           border-color: $lightPurple;
         }
       }
-      /* .searchIcon {
-        position: relative;
-        margin-right: 1rem;
-    } */
       
     }
 
-    .divider  {
+    //? removed for now
+    /* .divider  {
       width: 80%;
       border-color: rgb(255, 255, 255);
-    }
+    } */
 
     .contactList {
         display: flex;
